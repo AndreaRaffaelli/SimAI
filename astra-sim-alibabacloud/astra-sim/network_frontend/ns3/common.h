@@ -698,8 +698,20 @@ void SetConfig() {
 void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>),void (*send_finish)(FILE *, Ptr<RdmaQueuePair>)) {
 
   topof.open(topology_file.c_str());
+  if (!topof.is_open()) {
+    std::cerr << "Error: Unable to open topology file: " << topology_file << std::endl;
+    exit(1);
+  }
   flowf.open(flow_file.c_str());
+  if (!flowf.is_open()) {
+    std::cerr << "Error: Unable to open flow file: " << flow_file << std::endl;
+    exit(1);
+  }
   tracef.open(trace_file.c_str());
+  if (!tracef.is_open()) {
+    std::cerr << "Error: Unable to open trace file: " << trace_file << std::endl;
+    exit(1);
+  }
   string gpu_type_str;
 
   topof >> node_num >> gpus_per_server >> nvswitch_num >> switch_num >>
