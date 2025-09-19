@@ -269,7 +269,10 @@ int main(int argc, char *argv[]) {
   MtpInterface::Enable(user_param.thread);
   #endif
   
-  main1(user_param.network_topo,user_param.network_conf);
+  if(main1(user_param.network_topo,user_param.network_conf) == -1){
+    cout<<"read network topo or conf error"<<endl;
+    return -1;
+  }
   int nodes_num = node_num - switch_num;
   int gpu_num = node_num - nvswitch_num - switch_num;
 

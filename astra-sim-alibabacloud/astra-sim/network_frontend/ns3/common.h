@@ -461,6 +461,10 @@ bool ReadConf(string network_topo,string network_conf) {
 
     std::ifstream conf;
     conf.open(network_conf);
+    if (!conf.is_open()) {
+      std::cerr << "Error: Unable to open configuration file: " << network_conf << std::endl;
+      return false;
+    }
     topology_file = network_topo;
     while (!conf.eof()) {
       std::string key;
