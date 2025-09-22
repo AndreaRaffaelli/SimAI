@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/SimAI_analytical.dir/AnaSim.cc.o CMakeFiles/SimAI_analytical.dir/AnalyticalAstra.cc.o CMakeFiles/SimAI_analytical.dir/AnalyticalNetwork.cc.o -o SimAI_analytical  ../AstraSim/libAstraSim.a
