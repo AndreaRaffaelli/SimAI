@@ -33,7 +33,6 @@
 #include "ns3/packet.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/qbb-helper.h"
-
 #include <ns3/rdma-client-helper.h>
 #include <ns3/rdma-client.h>
 #include <ns3/rdma-driver.h>
@@ -730,31 +729,36 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>),void (*send_fini
     gpu_type = GPUType::NONE;
   }
 
-  std::vector<uint32_t> node_type(node_num, 0);
+  enum NodeType {
+    HOST = 0,
+    SWITCH = 1,
+    NVSWITCH = 2
+  };
+
+  std::vector<uint32_t> node_type(node_num, NodeType::HOST);
+  
   for (uint32_t i = 0; i < nvswitch_num; i++) {
     uint32_t sid;
     topof >> sid;
-    node_type[sid] = 2;
-	}
-	for (uint32_t i = 0; i < switch_num; i++)
-	{
-		uint32_t sid;
-		topof >> sid;
-		node_type[sid] = 1;
-	}
-	for (uint32_t i = 0; i < node_num; i++){
-		if (node_type[i] == 0)
-			n.Add(CreateObject<Node>());
-		else if(node_type[i] == 1){
-			Ptr<SwitchNode> sw = CreateObject<SwitchNode>();
-			n.Add(sw);
-			sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
-		}else if(node_type[i] == 2){
-			Ptr<NVSwitchNode> sw = CreateObject<NVSwitchNode>();
-			n.Add(sw);
-		}
-	}
-
+    node_type[sid] = NodeType::NVSWITCH;
+  }
+  for (uint32_t i = 0; i < switch_num; i++) {
+    uint32_t sid;
+    topof >> sid;
+    node_type[sid] = NodeType::SWITCH;
+  }
+  for (uint32_t i = 0; i < node_num; i++) {
+    if (node_type[i] == NodeType::HOST)
+      n.Add(CreateObject<Node>());
+    else if (node_type[i] == NodeType::SWITCH) {
+      Ptr<SwitchNode> sw = CreateObject<SwitchNode>();
+      n.Add(sw);
+      sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
+    } else if (node_type[i] == NodeType::NVSWITCH) {
+      Ptr<NVSwitchNode> sw = CreateObject<NVSwitchNode>();
+      n.Add(sw);
+    }
+  }
   NS_LOG_INFO("Create nodes.");
   InternetStackHelper internet;
   internet.Install(n);
@@ -856,7 +860,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>),void (*send_fini
 
   nic_rate = get_nic_rate(n);
   for (uint32_t i = 0; i < node_num; i++) {
-    if (n.Get(i)->GetNodeType() == 1) { 
+    if (n.Get(i)->GetNodeType() == NodeType::SWITCH) { 
       Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
       uint32_t shift = 3; 
 
@@ -989,7 +993,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>),void (*send_fini
   printf("maxRtt=%lu maxBdp=%lu\n", maxRtt, maxBdp);
 
   for (uint32_t i = 0; i < node_num; i++) {
-    if (n.Get(i)->GetNodeType() == 1) { 
+    if (n.Get(i)->GetNodeType() == NodeType::SWITCH) { 
       Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
       sw->SetAttribute("CcMode", UintegerValue(cc_mode));
       sw->SetAttribute("MaxRtt", UintegerValue(maxRtt));
