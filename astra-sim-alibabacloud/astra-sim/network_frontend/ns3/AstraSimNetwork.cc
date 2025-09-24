@@ -274,7 +274,10 @@ int main(int argc, char *argv[]) {
   #ifdef NS3_MTP
   MtpInterface::Enable(user_param.thread);
   #endif
-  
+
+  // Switch to Ns3 Realtime Simulator
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+
   if(main1(user_param.network_topo,user_param.network_conf, user_param.pcap_trace) == -1){
     cout<<"read network topo or conf error"<<endl;
     return -1;
