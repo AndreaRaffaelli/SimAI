@@ -426,23 +426,23 @@ void send_finish(FILE *fout, Ptr<RdmaQueuePair> q)
     }
     notify_sender_sending_finished(sid, did, all_sent_chunksize, flowTag);
   }
+}
+int main1(string network_topo, string network_conf, bool pcap_trace)
+{
+  clock_t begint, endt;
+  begint = clock();
 
-  int main1(string network_topo, string network_conf, bool pcap_trace)
-  {
-    clock_t begint, endt;
-    begint = clock();
+  if (!ReadConf(network_topo, network_conf))
+    return -1;
+  SetConfig();
+  SetPcapTracing(pcap_trace, "pcap_trace.pcap");
+  SetupNetwork(qp_finish, send_finish);
 
-    if (!ReadConf(network_topo, network_conf))
-      return -1;
-    SetConfig();
-    SetPcapTracing(pcap_trace, "pcap_trace.pcap");
-    SetupNetwork(qp_finish, send_finish);
+  std::cout << "Running Simulation.\n";
+  fflush(stdout);
+  NS_LOG_INFO("Run Simulation.");
 
-    std::cout << "Running Simulation.\n";
-    fflush(stdout);
-    NS_LOG_INFO("Run Simulation.");
-
-    endt = clock();
-    return 0;
-  }
+  endt = clock();
+  return 0;
+}
 #endif
