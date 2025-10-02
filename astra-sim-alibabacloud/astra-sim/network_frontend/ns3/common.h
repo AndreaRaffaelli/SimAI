@@ -45,18 +45,21 @@
 #include <ns3/sim-setting.h>
 #include <ns3/switch-node.h>
 #include <ns3/nvswitch-node.h>
-
+#include "pcap-sniffer.h"
 #include <atomic>
 
 using namespace ns3;
 using namespace std;
+using namespace pcap_sniffer;
 
 NS_LOG_COMPONENT_DEFINE("GENERIC_SIMULATION");
 
 uint32_t cc_mode = 1;
 bool enable_qcn = true, use_dynamic_pfc_threshold = true;
 uint32_t packet_payload_size = 1000, l2_chunk_size = 0, l2_ack_interval = 0;
-double pause_time = 5, simulator_stop_time = 3.01;
+double pause_time = 5;
+static double simulator_stop_time = 2000000000;;
+
 std::string data_rate, link_delay, topology_file, flow_file, trace_file,
     trace_output_file;
 std::string fct_output_file = "fct.txt";
@@ -1335,9 +1338,11 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     char date_buf[9];
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
-    // Enable PCAP tracing for all devices
-    qbb.EnablePcapAll(pcap_output_dir + "/" + current_date, true);
+    std::string pcap_file = pcap_output_dir + "/" + current_date + "/capture.pcap";
+    AttachPcapSnifferToAllDevices(n, pcap_file);
 
+    // Enable PCAP tracing for all devices
+    // qbb.EnablePcapAll(pcap_output_dir + "/" + current_date, true);
     // Specific devcies can be enabled as needed:
     // for (uint32_t i = 0; i < node_num; i++) {
     //     if (n.Get(i)->GetNodeType() == NodeType::SWITCH) {  // Solo host
