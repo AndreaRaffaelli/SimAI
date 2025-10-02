@@ -89,7 +89,18 @@ uint32_t ack_high_prio = 0;
 uint64_t link_down_time = 0;
 uint32_t link_down_A = 0, link_down_B = 0;
 
-uint32_t enable_trace = 1;
+// enable_trace bitmask options:
+// 0x1 (001) - Trace HOST nodes
+// 0x2 (010) - Trace SWITCH nodes
+// 0x4 (100) - Trace NVSWITCH nodes
+
+// Common combinations:
+// 0x7 (111) - Trace all node types (HOST + SWITCH + NVSWITCH)
+// 0x3 (011) - Trace HOST and SWITCH nodes
+// 0x6 (110) - Trace SWITCH and NVSWITCH nodes
+// 0x5 (101) - Trace HOST and NVSWITCH nodes
+
+uint32_t enable_trace = 0x7;
 uint32_t enable_pcap_trace = 1;
 uint32_t buffer_size = 16;
 
@@ -1160,17 +1171,23 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
 
 #if ENABLE_QP
   FILE *fct_output = fopen(fct_output_file.c_str(), "w");
-  if (!fct_output) {
+  if (!fct_output)
+  {
     std::cerr << "Error: Unable to open FCT output file: " << fct_output_file << std::endl;
     exit(1);
-  } else {
+  }
+  else
+  {
     std::cout << "FCT output file opened: " << fct_output_file << std::endl;
   }
   FILE *send_output = fopen(send_output_file.c_str(), "w");
-  if (!send_output) {
+  if (!send_output)
+  {
     std::cerr << "Error: Unable to open send output file: " << send_output_file << std::endl;
     exit(1);
-  } else {
+  }
+  else
+  {
     std::cout << "Send output file opened: " << send_output_file << std::endl;
   }
   for (uint32_t i = 0; i < node_num; i++)
@@ -1265,19 +1282,45 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
   }
 
   NodeContainer trace_nodes;
-  for (uint32_t i = 0; i < trace_num; i++)
+  if (trace_num > 0)
   {
-    uint32_t nid;
-    tracef >> nid;
-    if (nid >= n.GetN())
+    // Explicit node tracing from file
+    for (uint32_t i = 0; i < trace_num; i++)
     {
-      continue;
+      uint32_t nid;
+      tracef >> nid;
+      if (nid >= n.GetN())
+      {
+        continue;
+      }
+      trace_nodes = NodeContainer(trace_nodes, n.Get(nid));
     }
-    trace_nodes = NodeContainer(trace_nodes, n.Get(nid));
+  }
+  else
+  {
+    // Trace by node type
+    for (uint32_t i = 0; i < n.GetN(); i++)
+    {
+      switch (n.Get(i)->GetNodeType())
+      {
+      case 0:                   // HOST
+        if (enable_trace & 0x1) // bit 0 for hosts
+          trace_nodes = NodeContainer(trace_nodes, n.Get(i));
+        break;
+      case 1:                   // SWITCH
+        if (enable_trace & 0x2) // bit 1 for switches
+          trace_nodes = NodeContainer(trace_nodes, n.Get(i));
+        break;
+      case 2:                   // NVSWITCH
+        if (enable_trace & 0x4) // bit 2 for NVSwitches
+          trace_nodes = NodeContainer(trace_nodes, n.Get(i));
+        break;
+      }
+    }
   }
 
   FILE *trace_output = fopen(trace_output_file.c_str(), "w");
-  if (enable_trace)
+  if (enable_trace > 0)
     qbb.EnableTracing(trace_output, trace_nodes);
   if (enable_pcap_trace)
   {
@@ -1293,7 +1336,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
     // Enable PCAP tracing for all devices
-    qbb.EnablePcapAll(pcap_output_dir+"/"+current_date, true);
+    qbb.EnablePcapAll(pcap_output_dir + "/" + current_date, true);
 
     // Specific devcies can be enabled as needed:
     // for (uint32_t i = 0; i < node_num; i++) {
@@ -1351,7 +1394,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
 }
 
 void SetPcapTracing(bool pcap_trace, string pcap_dir)
-{ 
+{
   enable_pcap_trace = pcap_trace;
   pcap_output_dir = pcap_dir;
 }
