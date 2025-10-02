@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
   std::cout << "simulator run " << std::endl;
 
   Simulator::Run();
-  Simulator::Stop(Seconds(2000000000));
+  Simulator::Stop(Seconds(simulator_stop_time));
   Simulator::Destroy();
 
 #ifdef NS3_MPI
