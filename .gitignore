@@ -8,3 +8,5 @@ test/log/
 *.log
 .cur*
 .DS_Store
+*.pcap
+*.txt
