@@ -12,3 +12,4 @@ test/log/
 *.txt
 *.debug
 
+pcap_sniffer.debug
