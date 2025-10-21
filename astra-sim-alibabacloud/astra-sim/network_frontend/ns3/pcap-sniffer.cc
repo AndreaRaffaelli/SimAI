@@ -1,17 +1,23 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* Copyright (c) 2024, cyber://A Andrea Raffaelli,
  * Le Cnam & Università di Bologna
- * PCAP Sniffer for NS-3 - Implementation
+ * PCAPNG Sniffer for NS-3 - Implementation
  */
+
+#ifndef PCAP_SNIFFER_CC
+#define PCAP_SNIFFER_CC
 
 #include "pcap-sniffer.h"
 #include "common.h" // for simulator_stop_time
 #include <fstream>
+#include <algorithm>
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/callback.h"
+#include <arpa/inet.h>
 
 extern double simulator_stop_time; // defined in common.h
 
@@ -77,43 +83,69 @@ namespace ns3
 
         void OpenPcap(const std::string &filename)
         {
-            if (pcap_opened)
+
+            pcap_ofs.open(filename, std::ios::binary | std::ios::trunc);
+            if (!pcap_ofs)
                 return;
-
-            // Ensure parent dir exists
-            size_t pos = filename.find_last_of('/');
-            if (pos != std::string::npos)
-            {
-                std::string dir = filename.substr(0, pos);
-                system(("mkdir -p " + dir).c_str());
-            }
-
-            pcap_ofs.open(filename, std::ios::binary);
-            if (!pcap_ofs.is_open())
-            {
-                std::cerr << "PcapWriter: cannot open " << filename << std::endl;
-                return;
-            }
-
-            // pcap global header (native endian). Most readers accept both orders.
-            uint32_t magic_number = 0xa1b2c3d4; // file magic
-            uint16_t version_major = 2;
-            uint16_t version_minor = 4;
-            int32_t thiszone = 0;
-            uint32_t sigfigs = 0;
-            uint32_t snaplen = pcap_snaplen;
-            uint32_t network = 1; // LINKTYPE_ETHERNET (DLT_EN10MB)
-
-            write_le_u32(pcap_ofs, magic_number);
-            write_le_u16(pcap_ofs, version_major);
-            write_le_u16(pcap_ofs, version_minor);
-            write_le_s32(pcap_ofs, thiszone);
-            write_le_u32(pcap_ofs, sigfigs);
-            write_le_u32(pcap_ofs, snaplen);
-            write_le_u32(pcap_ofs, network);
-
-            pcap_ofs.flush();
             pcap_opened = true;
+
+            // Section Header Block (SHB) – minimal mandatory fields
+            std::vector<uint8_t> shb;
+            auto le32 = [](uint32_t v)
+            {
+                return std::array<uint8_t, 4>{static_cast<uint8_t>(v),
+                                              static_cast<uint8_t>(v >> 8),
+                                              static_cast<uint8_t>(v >> 16),
+                                              static_cast<uint8_t>(v >> 24)};
+            };
+            auto le16 = [](uint16_t v)
+            {
+                return std::array<uint8_t, 2>{static_cast<uint8_t>(v),
+                                              static_cast<uint8_t>(v >> 8)};
+            };
+            
+            shb.insert(shb.end(), le32(0x0A0D0D0A).begin(), le32(0x0A0D0D0A).end()); // Block Type
+            shb.insert(shb.end(), le32(28).begin(), le32(28).end());                 // Block Total Length
+            shb.insert(shb.end(), le32(0x1A2B3C4D).begin(), le32(0x1A2B3C4D).end()); // Byte‑order magic
+            shb.insert(shb.end(), le32(1).begin(), le32(1).end());                   // Major version
+            shb.insert(shb.end(), le32(0).begin(), le32(0).end());                   // Minor version
+            shb.insert(shb.end(), le32(0xFFFFFFFFFFFFFFFFULL).begin(), le32(0xFFFFFFFFFFFFFFFFULL).end()); // Section length (-1 = unknown)
+            shb.insert(shb.end(), le32(28).begin(), le32(28).end());                 // Trailing Block Total Length
+
+            pcap_ofs.write(reinterpret_cast<const char *>(shb.data()), shb.size());
+
+            // Interface Description Block (IDB) with proper structure
+            std::vector<uint8_t> idb;
+            idb.insert(idb.end(), le32(0x00000001).begin(), le32(0x00000001).end()); // Block Type
+            
+            // We'll fix the total length later
+            size_t length_pos = idb.size();
+            idb.insert(idb.end(), le32(0).begin(), le32(0).end());                   // Block Total Length (placeholder)
+            
+            idb.insert(idb.end(), le16(1).begin(), le16(1).end());                   // LinkType (Ethernet = 1)
+            idb.insert(idb.end(), le16(0).begin(), le16(0).end());                   // Reserved
+            idb.insert(idb.end(), le32(65535).begin(), le32(65535).end());           // SnapLen
+            
+            // Add if_tsresol option (option 9): timestamp resolution in microseconds (10^-6)
+            idb.insert(idb.end(), le16(9).begin(), le16(9).end());                   // Option Code: if_tsresol
+            idb.insert(idb.end(), le16(1).begin(), le16(1).end());                   // Option Length: 1 byte
+            idb.push_back(6);                                                         // Value: 6 means 10^-6 (microseconds)
+            idb.push_back(0); idb.push_back(0); idb.push_back(0);                   // Padding to 4-byte boundary
+            
+            // End of options
+            idb.insert(idb.end(), le16(0).begin(), le16(0).end());                   // opt_endofopt
+            idb.insert(idb.end(), le16(0).begin(), le16(0).end());                   // length = 0
+            
+            // Calculate and set the correct block total length
+            uint32_t idb_total_length = idb.size() + 4; // +4 for trailing length field
+            auto length_bytes = le32(idb_total_length);
+            std::copy(length_bytes.begin(), length_bytes.end(), idb.begin() + length_pos);
+            
+            // Add trailing Block Total Length
+            idb.insert(idb.end(), length_bytes.begin(), length_bytes.end());
+
+            pcap_ofs.write(reinterpret_cast<const char *>(idb.data()), idb.size());
+            pcap_ofs.flush();
         }
 
         void ClosePcap()
@@ -161,166 +193,257 @@ namespace ns3
             if (!pcap_opened)
                 return;
 
-            // timestamp from ns-3 simulator
-            uint64_t usec = Simulator::Now().GetMicroSeconds(); // 64-bit
-            uint32_t ts_sec = static_cast<uint32_t>(usec / 1000000ull);
-            uint32_t ts_usec = static_cast<uint32_t>(usec % 1000000ull);
+            /*--- 1. Timestamp from simulation in PCAPNG format -----------------*/
+            // With if_tsresol=6 (10^-6), we use microseconds directly
+            uint64_t usec = Simulator::Now().GetMicroSeconds();
+            uint32_t ts_high = static_cast<uint32_t>(usec >> 32);        // Upper 32 bits
+            uint32_t ts_low = static_cast<uint32_t>(usec & 0xFFFFFFFF);  // Lower 32 bits
+
+            /*--- 2. Length fields -------------------------------------*/
             uint32_t incl_len = static_cast<uint32_t>(frame.size());
             uint32_t orig_len = incl_len;
 
-            write_le_u32(pcap_ofs, ts_sec);
-            write_le_u32(pcap_ofs, ts_usec);
-            write_le_u32(pcap_ofs, incl_len);
-            write_le_u32(pcap_ofs, orig_len);
-            pcap_ofs.write(reinterpret_cast<const char *>(frame.data()), frame.size());
+            /*--- 3. Enhanced Packet Block (EPB) -----------------------*/
+            std::vector<uint8_t> epb;
+            epb.reserve(32 + incl_len + ((4 - (incl_len % 4)) % 4));
 
-            // flush occasionally to avoid losing last packets on abnormal exit
-            if ((Simulator::Now().GetMicroSeconds() % 1000000ull) < 1000ull)
+            auto le32 = [](uint32_t v)
+            {
+                return std::array<uint8_t, 4>{
+                    static_cast<uint8_t>(v),
+                    static_cast<uint8_t>(v >> 8),
+                    static_cast<uint8_t>(v >> 16),
+                    static_cast<uint8_t>(v >> 24)};
+            };
+
+            epb.insert(epb.end(), le32(0x00000006).begin(), le32(0x00000006).end()); // Block Type (EPB)
+            
+            size_t length_pos = epb.size();
+            epb.insert(epb.end(), le32(0).begin(), le32(0).end());                   // Placeholder for Block Total Length
+            
+            epb.insert(epb.end(), le32(0).begin(), le32(0).end());                   // Interface ID
+            epb.insert(epb.end(), le32(ts_high).begin(), le32(ts_high).end());       // Timestamp (High)
+            epb.insert(epb.end(), le32(ts_low).begin(), le32(ts_low).end());         // Timestamp (Low)
+            epb.insert(epb.end(), le32(incl_len).begin(), le32(incl_len).end());     // Captured Packet Length
+            epb.insert(epb.end(), le32(orig_len).begin(), le32(orig_len).end());     // Original Packet Length
+            epb.insert(epb.end(), frame.begin(), frame.end());                       // Packet Data
+            
+            // Padding to 4-byte boundary
+            while (epb.size() % 4)
+                epb.push_back(0);
+
+            // No options, so we can directly add trailing length
+            // Calculate Block Total Length
+            uint32_t block_len = static_cast<uint32_t>(epb.size() + 4); // +4 for trailing length
+            auto len_bytes = le32(block_len);
+
+            // Update the placeholder
+            std::copy(len_bytes.begin(), len_bytes.end(), epb.begin() + length_pos);
+            
+            // Add trailing Block Total Length
+            epb.insert(epb.end(), len_bytes.begin(), len_bytes.end());
+
+            /*--- 4. Optional debug dump ------------------------------*/
+            if (debug_mode)
+            {
+                debug_ofs << "PCAPNG EPB @" << Simulator::Now().GetSeconds()
+                          << "s, len=" << frame.size() << " bytes, usec=" << usec << " : ";
+                for (size_t i = 0; i < std::min(frame.size(), static_cast<size_t>(32)); ++i)
+                    debug_ofs << std::hex << std::setw(2) << std::setfill('0')
+                              << static_cast<int>(frame[i]) << ' ';
+                debug_ofs << std::dec << std::endl;
+            }
+
+            /*--- 5. Write EPB to file --------------------------------*/
+            pcap_ofs.write(reinterpret_cast<const char *>(epb.data()), epb.size());
+
+            /*--- 6. Flush periodically -------------------------------*/
+            static uint64_t last_flush_usec = 0;
+            if (usec - last_flush_usec >= 1'000'000ULL)
             {
                 pcap_ofs.flush();
+                last_flush_usec = usec;
             }
         }
 
-        // Main writer: takes ns3::Packet and emits a pcap frame (Ethernet or faked)
-        void WritePacketToPcap(Ptr<const Packet> pkt, CustomHeader ch)
+        // Helper: compute IPv4 header checksum (header in network byte order)
+        static uint16_t ComputeIpv4HeaderChecksum(const uint8_t *ipHdr, size_t ihlBytes)
         {
+            // ihlBytes must be a multiple of 2 and <= 60 (max IHL)
+            uint32_t sum = 0;
+            for (size_t i = 0; i < ihlBytes; i += 2)
+            {
+                // combine two bytes into 16-bit word (network order)
+                uint16_t word = (uint16_t(ipHdr[i]) << 8) | uint16_t(ipHdr[i + 1]);
+                sum += word;
+            }
+            // fold 32-bit sum to 16 bits
+            while (sum >> 16)
+                sum = (sum & 0xFFFF) + (sum >> 16);
+            return static_cast<uint16_t>(~sum & 0xFFFF);
+        }
+
+        void WritePacketToPcap(Ptr<const Packet> pkt, const CustomHeader &ch)
+        {
+            NS_ASSERT_MSG(pkt != nullptr, "Null packet passed to WritePacketToPcap");
             if (!pcap_opened)
                 return;
 
-            // First, serialize the CustomHeader
-            uint32_t headerSize = ch.GetSerializedSize();
-            std::vector<uint8_t> headerData(headerSize);
-
-            if (headerSize > 0)
+            /* ---------- Extract payload ---------- */
+            size_t hdSize = ch.GetSerializedSize();
+            std::vector<uint8_t> hdBuf(hdSize);
+            if (hdSize > 0)
             {
-                Buffer tempBuffer;
-                tempBuffer.AddAtStart(headerSize);
-                Buffer::Iterator it = tempBuffer.Begin();
+                Buffer buffer;
+                buffer.AddAtEnd(hdSize);
+                Buffer::Iterator it = buffer.Begin();
                 ch.Serialize(it);
-                tempBuffer.CopyData(headerData.data(), headerSize);
+                buffer.CopyData(hdBuf.data(), hdSize);
             }
+            uint32_t plSize = pkt->GetSize();
+            std::vector<uint8_t> payload(plSize);
+            if (plSize)
+                pkt->CopyData(payload.data(), plSize);
 
-            // Get the packet payload
-            uint32_t payloadSize = pkt->GetSize();
-            std::vector<uint8_t> payload;
-            payload.resize(payloadSize);
-            if (payloadSize > 0)
+            /* ---------- Helper lambdas ---------- */
+
+            // Verifica se il buffer ha un header Ethernet valido
+            auto isEthernet = [&](const std::vector<uint8_t> &buf) -> bool
             {
-                pkt->CopyData(payload.data(), payloadSize);
+                if (buf.size() < 14)
+                    return false;
+                uint16_t ethertype = (uint16_t(buf[12]) << 8) | buf[13];
+                return ethertype == 0x0800 || ethertype == 0x86DD ||
+                       ethertype == 0x0806 || ethertype == 0x88B5;
+            };
+
+            // Verifica se il buffer (a un offset) contiene un header IPv4 valido
+            auto isIPv4 = [&](const std::vector<uint8_t> &buf, size_t offset = 0) -> bool
+            {
+                if (buf.size() < offset + 20)
+                    return false;
+                uint8_t vihl = buf[offset];
+                return (vihl >> 4) == 4 && (vihl & 0x0F) >= 5;
+            };
+
+            // Verifica se il buffer contiene un header UDP valido (porta + lunghezza)
+            auto isUDP = [&](const std::vector<uint8_t> &buf, size_t offset) -> bool
+            {
+                if (buf.size() < offset + 8)
+                    return false;
+                uint16_t length = (uint16_t(buf[offset + 4]) << 8) | buf[offset + 5];
+                return length >= 8 && length <= buf.size() - offset;
+            };
+
+            // Ricalcola checksum IPv4 in place
+            auto fixIpv4Checksum = [&](std::vector<uint8_t> &buf, size_t offset)
+            {
+                uint8_t ihl = buf[offset] & 0x0F;
+                size_t ihlBytes = ihl * 4;
+                if (ihlBytes >= 20 && offset + ihlBytes <= buf.size())
+                {
+                    buf[offset + 10] = 0;
+                    buf[offset + 11] = 0;
+                    uint16_t csum = ComputeIpv4HeaderChecksum(buf.data() + offset, ihlBytes);
+                    uint16_t csumNet = htons(csum);
+                    buf[offset + 10] = static_cast<uint8_t>(csumNet >> 8);
+                    buf[offset + 11] = static_cast<uint8_t>(csumNet & 0xFF);
+                }
+            };
+
+            /* ---------- Layer detection ---------- */
+            bool hasEthernet = isEthernet(payload);
+            if (isEthernet(hdBuf))
+            {
+                hasEthernet = true;
+                // copy hdBuf at the beginning of payload
+                if (payload.size() >= hdBuf.size())
+                {
+                    std::memcpy(payload.data(), hdBuf.data(), hdBuf.size());
+                }
+            }
+            bool hasIpv4 = false;
+            bool hasUdp = false;
+            size_t ipOffset = SIZE_MAX;
+            size_t udpOffset = SIZE_MAX;
+
+            if (hasEthernet && payload.size() >= 14)
+            {
+                ipOffset = 14;
+                if (isIPv4(payload, ipOffset))
+                    hasIpv4 = true;
+            }
+            else if (isIPv4(payload, 0))
+            {
+                ipOffset = 0;
+                hasIpv4 = true;
             }
 
-            // Combine header + payload
-            std::vector<uint8_t> completePacket;
-            completePacket.reserve(headerSize + payloadSize);
-            completePacket.insert(completePacket.end(), headerData.begin(), headerData.end());
-            completePacket.insert(completePacket.end(), payload.begin(), payload.end());
+            if (hasIpv4)
+            {
+                uint8_t ihl = payload[ipOffset] & 0x0F;
+                size_t ihlBytes = ihl * 4;
+                uint8_t proto = payload[ipOffset + 9]; // protocol field
+                if (proto == 17 && payload.size() >= ipOffset + ihlBytes + 8)
+                {
+                    udpOffset = ipOffset + ihlBytes;
+                    if (isUDP(payload, udpOffset))
+                        hasUdp = true;
+                }
+            }
 
-            // Now process the complete packet for PCAP
+            /* ---------- Fix IPv4 checksum if needed ---------- */
+            if (hasIpv4)
+                fixIpv4Checksum(payload, ipOffset);
+
+            /* ---------- Build final frame ---------- */
             std::vector<uint8_t> frame;
-            const uint8_t *data = completePacket.data();
-            size_t len = completePacket.size();
 
-            // Check if CustomHeader includes L2 (Ethernet-like) header
-            if (ch.headerType & CustomHeader::L2_Header)
+            if (!hasEthernet)
             {
-                // CustomHeader already has L2, use complete packet as-is
-                frame = completePacket;
-            }
-            else if (looks_like_ipv4_payload(data, len))
-            {
-                // No L2 header in CustomHeader, but we have IPv4
-                // Prepend fake Ethernet header with EtherType IPv4
-                frame.resize(14 + len);
-                // Dest MAC
-                frame[0] = 0x00;
-                frame[1] = 0x00;
-                frame[2] = 0x00;
-                frame[3] = 0x00;
-                frame[4] = 0x00;
-                frame[5] = 0x01;
-                // Src MAC
-                frame[6] = 0x00;
-                frame[7] = 0x00;
-                frame[8] = 0x00;
-                frame[9] = 0x00;
-                frame[10] = 0x00;
-                frame[11] = 0x02;
-                // EtherType 0x0800 (IPv4)
-                frame[12] = 0x08;
-                frame[13] = 0x00;
-                if (len > 0)
-                    memcpy(frame.data() + 14, data, len);
-            }
-            else if (looks_like_ipv6_payload(data, len))
-            {
-                frame.resize(14 + len);
-                frame[0] = 0x00;
-                frame[1] = 0x00;
-                frame[2] = 0x00;
-                frame[3] = 0x00;
-                frame[4] = 0x00;
-                frame[5] = 0x01;
-                frame[6] = 0x00;
-                frame[7] = 0x00;
-                frame[8] = 0x00;
-                frame[9] = 0x00;
-                frame[10] = 0x00;
-                frame[11] = 0x02;
-                // EtherType 0x86DD (IPv6)
-                frame[12] = 0x86;
-                frame[13] = 0xDD;
-                if (len > 0)
-                    memcpy(frame.data() + 14, data, len);
+                // Synth Ethernet header
+                uint16_t ethertype = hasIpv4 ? 0x0800 : 0x88B5;
+                frame.assign(14 + payload.size(), 0);
+                // dest MAC = 00:00:00:00:00:01
+                frame[5] = 1;
+                // src MAC = 00:00:00:00:00:02
+                frame[11] = 2;
+                // ethertype
+                frame[12] = static_cast<uint8_t>(ethertype >> 8);
+                frame[13] = static_cast<uint8_t>(ethertype & 0xFF);
+                if (!payload.empty())
+                    std::memcpy(frame.data() + 14, payload.data(), payload.size());
             }
             else
             {
-                // Unknown format: wrap in minimal Ethernet frame
-                frame.resize(14 + len);
-                frame[0] = 0x00;
-                frame[1] = 0x00;
-                frame[2] = 0x00;
-                frame[3] = 0x00;
-                frame[4] = 0x00;
-                frame[5] = 0x01;
-                frame[6] = 0x00;
-                frame[7] = 0x00;
-                frame[8] = 0x00;
-                frame[9] = 0x00;
-                frame[10] = 0x00;
-                frame[11] = 0x02;
-                // EtherType 0x0000 (unknown)
-                frame[12] = 0x00;
-                frame[13] = 0x00;
-                if (len > 0)
-                    memcpy(frame.data() + 14, data, len);
+                frame = std::move(payload);
             }
+
+            /* ---------- Optional diagnostics ---------- */
+            if (debug_mode)
+            {
+                debug_ofs << "[WritePacketToPcap] "
+                          << "L2=" << hasEthernet
+                          << " L3=" << hasIpv4
+                          << " L4(UDP)=" << hasUdp
+                          << " frame.len=" << frame.size()
+                          << "\n";
+            }
+
+            /* ---------- Write to PCAP ---------- */
             write_frame_with_timestamp(frame);
         }
-
         // Free functions used as callbacks for Config::ConnectWithoutContext
         static void _pcap_trace_cb_pkt(Ptr<const Packet> pkt, CustomHeader ch)
         {
             pcap_sniffer::WritePacketToPcap(pkt, ch);
         }
 
-        // static void _pcap_trace_cb_pkt_with_dev(Ptr<const Packet> pkt, Ptr<NetDevice> dev)
-        // {
-        //     pcap_sniffer::WritePacketToPcap(pkt);
-        // }
-
-        // static void _pcap_trace_cb_pkt_with_addr(Ptr<const Packet> pkt, const Address &addr)
-        // {
-        //     pcap_sniffer::WritePacketToPcap(pkt);
-        // }
-
-        // static void _pcap_trace_cb_pkt_with_node(Ptr<const Packet> pkt, Ptr<Node> node, uint32_t ifindex)
-        // {
-        //     pcap_sniffer::WritePacketToPcap(pkt);
-        // }
-
         // Helper to attach sniffer to QbbNetDevice trace sources (and some generic names)
         void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath)
         {
+            // Create output directory if needed
+            system(("mkdir -p " + outPath.substr(0, outPath.find_last_of('/'))).c_str());
             // open pcap
             pcap_sniffer::OpenPcap(outPath);
 
@@ -331,22 +454,10 @@ namespace ns3
             Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketRx",
                                           MakeCallback(&_pcap_trace_cb_pkt));
 
-            // also attempt to connect to common trace-source names so we capture other device types
-            // these calls will attach only where that trace source exists
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacTx",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacRx",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyTxBegin",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyRxEnd",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Tx",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Rx",
-            //                               MakeCallback(&_pcap_trace_cb_pkt));
-
             Simulator::Schedule(Seconds(simulator_stop_time), &pcap_sniffer::ClosePcap);
         }
-    }
+    } // namespace pcap_sniffer
+
 } // namespace ns3
+
+#endif // PCAP_SNIFFER_CC

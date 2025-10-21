@@ -4,9 +4,9 @@
  *
  * PCAP Sniffer for NS-3
  *
- * This utility provides PCAP packet capture functionality for NS-3 simulations.
+ * This utility provides PCAPNG packet capture functionality for NS-3 simulations.
  * It captures packets from QbbNetDevice and other network devices and writes
- * them to a PCAP file that can be analyzed with tools like Wireshark.
+ * them to a PCAPNG file that can be analyzed with tools like Wireshark.
  */
 
 #ifndef PCAP_SNIFFER_H
@@ -56,12 +56,13 @@ namespace ns3
         /**
          * \brief Write an NS-3 packet to the PCAP file
          * \param pkt Pointer to the packet to capture
+         * \param ch The associated CustomHeader for the packet
          *
          * Extracts packet data and writes it to PCAP with proper Ethernet framing.
          * Automatically detects if Ethernet header is present or needs to be added.
          * Supports IPv4, IPv6, and raw payloads.
          */
-        void WritePacketToPcap(Ptr<const Packet> pkt, CustomHeader ch);
+        void WritePacketToPcap(Ptr<const Packet> pkt, const CustomHeader &ch);
 
         /**
          * \brief Set out file path for PCAP output
