@@ -47,7 +47,7 @@ function compile {
     #     echo ""${INPUT_DIR}"/config/SimAI.conf is not exist"
     #     cp "${INPUT_DIR}"/config/SimAI.conf "${SIM_LOG_DIR}"/config/SimAI.conf
     # fi
-    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/AstraSimNetwork.cc "${NS3_DIR}"/simulation/scratch/
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${NS3_DIR}"/simulation/scratch/
     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${NS3_DIR}"/simulation/scratch/
     rm -rf "${NS3_APPLICATION}"/astra-sim 
     cp -r "${ASTRA_SIM_DIR}" "${NS3_APPLICATION}"/
@@ -58,9 +58,61 @@ function compile {
 
     cd "${SCRIPT_DIR:?}"
 }
+# function compile {
+#     # Crea una subdirectory per AstraSimNetwork in scratch
+#     CNAM_SIM_DIR="${NS3_DIR}/simulation/scratch/CnamSimNetwork"
+#     mkdir -p "${CNAM_SIM_DIR}"
+    
+#     # Copia tutti i file sorgenti nella subdirectory
+#     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${CNAM_SIM_DIR}"/
+#     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${CNAM_SIM_DIR}"/
+    
+#     # Crea un CMakeLists.txt personalizzato nella subdirectory
+#     cat > "${CNAM_SIM_DIR}/CMakeLists.txt" << 'EOF'
+# # Custom CMakeLists.txt for AstraSimNetwork scratch program
+
+# # Collect all source files
+# file(GLOB ASTRASIM_SOURCES "*.cc")
+
+# # Create the executable
+# add_executable(scratch_AstraSimNetwork ${ASTRASIM_SOURCES})
+
+# # Link against NS-3 libraries
+# if(${NS3_STATIC})
+#     target_link_libraries(
+#         scratch_AstraSimNetwork 
+#         ${LIB_AS_NEEDED_PRE_STATIC}
+#         ${lib-ns3-static}
+#     )
+# else()
+#     target_link_libraries(
+#         scratch_AstraSimNetwork 
+#         "${ns3-libs}" 
+#         "${ns3-contrib-libs}"
+#         "${ns3-external-libs}"
+#     )
+# endif()
+
+# # Set output directory
+# set_target_properties(scratch_AstraSimNetwork PROPERTIES
+#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/scratch"
+# )
+# EOF
+    
+#     # Copia astra-sim
+#     rm -rf "${NS3_APPLICATION}"/astra-sim
+#     cp -r "${ASTRA_SIM_DIR}" "${NS3_APPLICATION}"/
+    
+#     # Compila
+#     cd "${NS3_DIR}/simulation"
+#     CC='gcc' CXX='g++'
+#     ./ns3 configure -d debug --enable-mtp
+#     ./ns3 build
+#     cd "${SCRIPT_DIR:?}"
+# }
 
 function debug {
-    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/AstraSimNetwork.cc "${NS3_DIR}"/simulation/scratch/
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${NS3_DIR}"/simulation/scratch/
     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${NS3_DIR}"/simulation/scratch/
     cd "${NS3_DIR}/simulation"
     CC='gcc-4.9' CXX='g++-4.9' 

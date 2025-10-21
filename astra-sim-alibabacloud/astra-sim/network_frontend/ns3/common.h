@@ -46,6 +46,7 @@
 #include <ns3/switch-node.h>
 #include <ns3/nvswitch-node.h>
 #include "pcap-sniffer.h"
+#include "pcap-sniffer.cc"
 #include <atomic>
 
 using namespace ns3;
@@ -58,7 +59,7 @@ uint32_t cc_mode = 1;
 bool enable_qcn = true, use_dynamic_pfc_threshold = true;
 uint32_t packet_payload_size = 1000, l2_chunk_size = 0, l2_ack_interval = 0;
 double pause_time = 5;
-static double simulator_stop_time = 2000000000;;
+extern double simulator_stop_time = 2000000000;
 
 std::string data_rate, link_delay, topology_file, flow_file, trace_file,
     trace_output_file;
@@ -1331,7 +1332,6 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
 
     // Create the output directory if it doesn't exist
     system(("mkdir -p " + pcap_output_dir).c_str());
-
     // Get the current date in YYYYMMDD format
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
@@ -1339,7 +1339,9 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
     std::string pcap_file = pcap_output_dir + "/" + current_date + "/capture.pcap";
-    AttachPcapSnifferToAllDevices(n, pcap_file);
+    pcap_sniffer::SetOutputFile(pcap_output_dir + "/" + current_date +"pcap_sniffer.debug");
+    pcap_sniffer::SetDebugMode(true);  // Optional: for debugging
+    pcap_sniffer::AttachPcapSnifferToAllDevices(n, pcap_file);
 
     // Enable PCAP tracing for all devices
     // qbb.EnablePcapAll(pcap_output_dir + "/" + current_date, true);

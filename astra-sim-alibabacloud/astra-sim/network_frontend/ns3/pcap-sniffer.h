@@ -61,22 +61,40 @@ namespace ns3
          * Automatically detects if Ethernet header is present or needs to be added.
          * Supports IPv4, IPv6, and raw payloads.
          */
-        void WritePacketToPcap(Ptr<const Packet> pkt);
+        void WritePacketToPcap(Ptr<const Packet> pkt, CustomHeader ch);
+
+        /**
+         * \brief Set out file path for PCAP output
+         * \param filename The path to the output PCAP file
+         *
+         * This function:
+         * - Sets the output file path for PCAP captures
+         */
+        void SetOutputFile(const std::string &filename);
+
+        /**
+         * \brief Set debug mode for PCAP sniffer
+         * \param enable true to enable debug output, false to disable
+         *
+         * This function:
+         * - Enables or disables debug output for the PCAP sniffer
+         */
+        void SetDebugMode(bool enable);
+
+        /**
+         * \brief Attach PCAP sniffer to all devices in a node container
+         * \param nodes The nodes whose devices should be captured
+         * \param outPath Path to the output PCAP file
+         *
+         * This function:
+         * - Opens the PCAP file
+         * - Connects to PacketTx/PacketRx trace sources on QbbNetDevice
+         * - Connects to common trace sources on other device types
+         * - Schedules PCAP file closure after simulation end
+         */
+        void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath);
 
     } // namespace pcap_sniffer
-
-    /**
-     * \brief Attach PCAP sniffer to all devices in a node container
-     * \param nodes The nodes whose devices should be captured
-     * \param outPath Path to the output PCAP file
-     *
-     * This function:
-     * - Opens the PCAP file
-     * - Connects to PacketTx/PacketRx trace sources on QbbNetDevice
-     * - Connects to common trace sources on other device types
-     * - Schedules PCAP file closure after simulation end
-     */
-    void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath);
 
 } // namespace ns3
 

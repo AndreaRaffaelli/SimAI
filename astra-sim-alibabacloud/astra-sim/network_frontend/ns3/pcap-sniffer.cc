@@ -5,6 +5,7 @@
  */
 
 #include "pcap-sniffer.h"
+#include "common.h" // for simulator_stop_time
 #include <fstream>
 #include <iostream>
 #include <cstring>
@@ -12,7 +13,7 @@
 #include "ns3/config.h"
 #include "ns3/callback.h"
 
-extern double simulator_stop_time; // should be defined in your simulation code
+extern double simulator_stop_time; // defined in common.h
 
 namespace ns3
 {
@@ -20,8 +21,9 @@ namespace ns3
     // -------------------- PCAP WRITER (custom) --------------------
     namespace pcap_sniffer
     {
-
+        static bool debug_mode = false; // enable debug output
         static std::ofstream pcap_ofs;
+        static std::ofstream debug_ofs;
         static uint32_t pcap_snaplen = 65535; // large snapshot length
         static bool pcap_opened = false;
 
@@ -38,6 +40,39 @@ namespace ns3
         static inline void write_le_s32(std::ofstream &ofs, int32_t v)
         {
             ofs.write(reinterpret_cast<const char *>(&v), sizeof(v));
+        }
+
+        void SetOutputFile(const std::string &filename)
+        {
+            if (debug_mode)
+            {
+                // Ensure parent dir exists
+                size_t pos = filename.find_last_of('/');
+                if (pos != std::string::npos)
+                {
+                    std::string dir = filename.substr(0, pos);
+                    system(("mkdir -p " + dir).c_str());
+                }
+                debug_ofs.open(filename, std::ios::out);
+                if (!debug_ofs.is_open())
+                {
+                    std::cerr << "PcapSniffer: cannot open debug file " << filename << std::endl;
+                }
+            }
+        }
+
+        void SetDebugMode(bool enable)
+        {
+            debug_mode = enable;
+            if (debug_mode && !debug_ofs.is_open())
+            {
+                debug_ofs.open("pcap_sniffer.debug", std::ios::out);
+                if (!debug_ofs.is_open())
+                {
+                    std::cerr << "PcapSniffer: cannot open default debug file pcap_sniffer.debug" << std::endl;
+                    debug_mode = false;
+                }
+            }
         }
 
         void OpenPcap(const std::string &filename)
@@ -147,46 +182,70 @@ namespace ns3
         }
 
         // Main writer: takes ns3::Packet and emits a pcap frame (Ethernet or faked)
-        void WritePacketToPcap(Ptr<const Packet> pkt)
+        void WritePacketToPcap(Ptr<const Packet> pkt, CustomHeader ch)
         {
             if (!pcap_opened)
                 return;
 
-            uint32_t size = pkt->GetSize();
-            std::vector<uint8_t> payload;
-            payload.resize(size);
-            if (size > 0)
+            // First, serialize the CustomHeader
+            uint32_t headerSize = ch.GetSerializedSize();
+            std::vector<uint8_t> headerData(headerSize);
+
+            if (headerSize > 0)
             {
-                pkt->CopyData(payload.data(), size);
+                Buffer tempBuffer;
+                tempBuffer.AddAtStart(headerSize);
+                Buffer::Iterator it = tempBuffer.Begin();
+                ch.Serialize(it);
+                tempBuffer.CopyData(headerData.data(), headerSize);
             }
 
-            std::vector<uint8_t> frame;
-            const uint8_t *data = payload.data();
-            size_t len = payload.size();
-
-            if (looks_like_ethernet(data, len))
+            // Get the packet payload
+            uint32_t payloadSize = pkt->GetSize();
+            std::vector<uint8_t> payload;
+            payload.resize(payloadSize);
+            if (payloadSize > 0)
             {
-                frame = payload;
+                pkt->CopyData(payload.data(), payloadSize);
+            }
+
+            // Combine header + payload
+            std::vector<uint8_t> completePacket;
+            completePacket.reserve(headerSize + payloadSize);
+            completePacket.insert(completePacket.end(), headerData.begin(), headerData.end());
+            completePacket.insert(completePacket.end(), payload.begin(), payload.end());
+
+            // Now process the complete packet for PCAP
+            std::vector<uint8_t> frame;
+            const uint8_t *data = completePacket.data();
+            size_t len = completePacket.size();
+
+            // Check if CustomHeader includes L2 (Ethernet-like) header
+            if (ch.headerType & CustomHeader::L2_Header)
+            {
+                // CustomHeader already has L2, use complete packet as-is
+                frame = completePacket;
             }
             else if (looks_like_ipv4_payload(data, len))
             {
-                // prepend fake ethernet header with ethertype IPv4
+                // No L2 header in CustomHeader, but we have IPv4
+                // Prepend fake Ethernet header with EtherType IPv4
                 frame.resize(14 + len);
-                // dest MAC
+                // Dest MAC
                 frame[0] = 0x00;
                 frame[1] = 0x00;
                 frame[2] = 0x00;
                 frame[3] = 0x00;
                 frame[4] = 0x00;
                 frame[5] = 0x01;
-                // src MAC
+                // Src MAC
                 frame[6] = 0x00;
                 frame[7] = 0x00;
                 frame[8] = 0x00;
                 frame[9] = 0x00;
                 frame[10] = 0x00;
                 frame[11] = 0x02;
-                // ethertype 0x0800
+                // EtherType 0x0800 (IPv4)
                 frame[12] = 0x08;
                 frame[13] = 0x00;
                 if (len > 0)
@@ -207,7 +266,7 @@ namespace ns3
                 frame[9] = 0x00;
                 frame[10] = 0x00;
                 frame[11] = 0x02;
-                // ethertype 0x86DD
+                // EtherType 0x86DD (IPv6)
                 frame[12] = 0x86;
                 frame[13] = 0xDD;
                 if (len > 0)
@@ -215,8 +274,7 @@ namespace ns3
             }
             else
             {
-                // unknown: put raw payload as-is but still report as Ethernet frame (no L2)
-                // create a minimal Ethernet header and put payload after it so Wireshark can still open payload bytes as "data".
+                // Unknown format: wrap in minimal Ethernet frame
                 frame.resize(14 + len);
                 frame[0] = 0x00;
                 frame[1] = 0x00;
@@ -230,69 +288,65 @@ namespace ns3
                 frame[9] = 0x00;
                 frame[10] = 0x00;
                 frame[11] = 0x02;
-                // ethertype 0x0000 (unknown)
+                // EtherType 0x0000 (unknown)
                 frame[12] = 0x00;
                 frame[13] = 0x00;
                 if (len > 0)
                     memcpy(frame.data() + 14, data, len);
             }
-
             write_frame_with_timestamp(frame);
         }
 
-    } // namespace pcap_sniffer
+        // Free functions used as callbacks for Config::ConnectWithoutContext
+        static void _pcap_trace_cb_pkt(Ptr<const Packet> pkt, CustomHeader ch)
+        {
+            pcap_sniffer::WritePacketToPcap(pkt, ch);
+        }
 
-    // Free functions used as callbacks for Config::ConnectWithoutContext
-    static void _pcap_trace_cb_pkt(Ptr<const Packet> pkt)
-    {
-        pcap_sniffer::WritePacketToPcap(pkt);
+        // static void _pcap_trace_cb_pkt_with_dev(Ptr<const Packet> pkt, Ptr<NetDevice> dev)
+        // {
+        //     pcap_sniffer::WritePacketToPcap(pkt);
+        // }
+
+        // static void _pcap_trace_cb_pkt_with_addr(Ptr<const Packet> pkt, const Address &addr)
+        // {
+        //     pcap_sniffer::WritePacketToPcap(pkt);
+        // }
+
+        // static void _pcap_trace_cb_pkt_with_node(Ptr<const Packet> pkt, Ptr<Node> node, uint32_t ifindex)
+        // {
+        //     pcap_sniffer::WritePacketToPcap(pkt);
+        // }
+
+        // Helper to attach sniffer to QbbNetDevice trace sources (and some generic names)
+        void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath)
+        {
+            // open pcap
+            pcap_sniffer::OpenPcap(outPath);
+
+            // Preferred: connect to QbbNetDevice explicit trace-source names (we added them).
+            // wildcard path attaches only to existing trace sources.
+            Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketTx",
+                                          MakeCallback(&_pcap_trace_cb_pkt));
+            Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketRx",
+                                          MakeCallback(&_pcap_trace_cb_pkt));
+
+            // also attempt to connect to common trace-source names so we capture other device types
+            // these calls will attach only where that trace source exists
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacTx",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacRx",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyTxBegin",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyRxEnd",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Tx",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+            // Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Rx",
+            //                               MakeCallback(&_pcap_trace_cb_pkt));
+
+            Simulator::Schedule(Seconds(simulator_stop_time), &pcap_sniffer::ClosePcap);
+        }
     }
-
-    static void _pcap_trace_cb_pkt_with_dev(Ptr<const Packet> pkt, Ptr<NetDevice> dev)
-    {
-        pcap_sniffer::WritePacketToPcap(pkt);
-    }
-
-    static void _pcap_trace_cb_pkt_with_addr(Ptr<const Packet> pkt, const Address &addr)
-    {
-        pcap_sniffer::WritePacketToPcap(pkt);
-    }
-
-    static void _pcap_trace_cb_pkt_with_node(Ptr<const Packet> pkt, Ptr<Node> node, uint32_t ifindex)
-    {
-        pcap_sniffer::WritePacketToPcap(pkt);
-    }
-
-    // Helper to attach sniffer to QbbNetDevice trace sources (and some generic names)
-    void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath)
-    {
-        // open pcap
-        pcap_sniffer::OpenPcap(outPath);
-
-        // Preferred: connect to QbbNetDevice explicit trace-source names (we added them).
-        // wildcard path attaches only to existing trace sources.
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketTx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketRx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-
-        // also attempt to connect to common trace-source names so we capture other device types
-        // these calls will attach only where that trace source exists
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacTx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/MacRx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyTxBegin",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/PhyRxEnd",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Tx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Rx",
-                                      MakeCallback(&_pcap_trace_cb_pkt));
-        
-        extern double simulator_stop_time;
-        Simulator::Schedule(Seconds(simulator_stop_time), &pcap_sniffer::ClosePcap);
-    }
-
 } // namespace ns3
