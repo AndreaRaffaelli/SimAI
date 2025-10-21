@@ -10,3 +10,5 @@ test/log/
 .DS_Store
 *.pcap
 *.txt
+*.debug
+
