@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o"
-  "CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o.d"
   "CMakeFiles/pcap_sniffer_test.dir/test_pcap_sniffer.cc.o"
   "CMakeFiles/pcap_sniffer_test.dir/test_pcap_sniffer.cc.o.d"
   "CMakeFiles/pcap_sniffer_test.dir/test_utils.cc.o"

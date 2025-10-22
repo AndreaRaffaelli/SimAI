@@ -139,30 +139,6 @@ pcap_sniffer_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcap_sniffer_test.dir/build.make CMakeFiles/pcap_sniffer_test.dir/build
 .PHONY : pcap_sniffer_test/fast
 
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.o: home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.o
-
-# target to build an object file
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcap_sniffer_test.dir/build.make CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o
-
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.i: home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.i
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.i
-
-# target to preprocess a source file
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcap_sniffer_test.dir/build.make CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.i
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.i
-
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.s: home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.s
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.s
-
-# target to generate assembly for a file
-home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcap_sniffer_test.dir/build.make CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.s
-.PHONY : home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.s
-
 test_pcap_sniffer.o: test_pcap_sniffer.cc.o
 .PHONY : test_pcap_sniffer.o
 
@@ -221,9 +197,6 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... pcap_sniffer_test"
-	@echo "... home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.o"
-	@echo "... home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.i"
-	@echo "... home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.s"
 	@echo "... test_pcap_sniffer.o"
 	@echo "... test_pcap_sniffer.i"
 	@echo "... test_pcap_sniffer.s"

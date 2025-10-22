@@ -9,6 +9,7 @@
 #include "system/Common.hh"
 #include "test_utils.h"
 #include "pcap-sniffer.h"
+#include "pcap-sniffer.cc"
 #include "ns3/custom-header.h"
 #include <fstream>
 #include <filesystem>
