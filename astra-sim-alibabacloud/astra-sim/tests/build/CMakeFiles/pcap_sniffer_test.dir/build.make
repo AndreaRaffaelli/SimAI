@@ -127,6 +127,7 @@ pcap_sniffer_test: CMakeFiles/pcap_sniffer_test.dir/test_pcap_sniffer.cc.o
 pcap_sniffer_test: CMakeFiles/pcap_sniffer_test.dir/test_utils.cc.o
 pcap_sniffer_test: CMakeFiles/pcap_sniffer_test.dir/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3/pcap-sniffer.cc.o
 pcap_sniffer_test: CMakeFiles/pcap_sniffer_test.dir/build.make
+pcap_sniffer_test: /home/linuxbrew/.linuxbrew/lib/libPcap++.a
 pcap_sniffer_test: /home/roc/miniconda3/lib/libgtest_main.so.1.11.0
 pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3.36.1-core-default.so
 pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3.36.1-network-default.so
@@ -135,6 +136,9 @@ pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3
 pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3.36.1-point-to-point-default.so
 pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3.36.1-mobility-default.so
 pcap_sniffer_test: /home/roc/SimAI/ns-3-alibabacloud/simulation/build/lib/libns3.36.1-csma-default.so
+pcap_sniffer_test: /home/linuxbrew/.linuxbrew/lib/libPacket++.a
+pcap_sniffer_test: /home/linuxbrew/.linuxbrew/lib/libCommon++.a
+pcap_sniffer_test: /usr/lib/x86_64-linux-gnu/libpcap.so
 pcap_sniffer_test: /home/roc/miniconda3/lib/libgtest.so.1.11.0
 pcap_sniffer_test: CMakeFiles/pcap_sniffer_test.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable pcap_sniffer_test"
