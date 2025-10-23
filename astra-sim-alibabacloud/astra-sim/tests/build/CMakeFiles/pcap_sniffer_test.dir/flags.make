@@ -6,5 +6,5 @@ CXX_DEFINES = -DGTEST_LINKED_AS_SHARED_LIBRARY=1 -DNS3_LOG_ENABLE
 
 CXX_INCLUDES = -I/home/roc/SimAI/ns-3-alibabacloud/simulation/build/include -I/home/roc/SimAI/ns-3-alibabacloud/simulation/build/src -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/ns3 -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/json -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests -isystem /home/linuxbrew/.linuxbrew/include/pcapplusplus -isystem /home/linuxbrew/.linuxbrew/include -isystem /home/roc/miniconda3/include
 
-CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17
+CXX_FLAGS = -g -std=gnu++17
 

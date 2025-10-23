@@ -1,18 +1,14 @@
 #include <gtest/gtest.h>
-#include <ns3/test.h>
-#include <ns3/core-module.h>
-#include <ns3/network-module.h>
-#include <ns3/internet-module.h>
-#include <ns3/csma-module.h>
-#include <ns3/applications-module.h>
-#include <ns3/qbb-net-device.h>
-#include "system/Common.hh"
 #include "test_utils.h"
-#include "pcap-sniffer.h"
-#include "pcap-sniffer.cc"
-#include "ns3/custom-header.h"
+#include "pcap-sniffer.h"  // Header only, NOT the .cc file
+#include "system/Common.hh"
 #include <fstream>
 #include <filesystem>
+
+// PcapPlusPlus includes
+#include "PcapFileDevice.h"
+#include "RawPacket.h"
+#include "Packet.h"
 
 using namespace ns3;
 using namespace ns3::pcap_sniffer;
@@ -140,15 +136,16 @@ TEST_F(PcapSnifferTest, CreatesValidPcapFile)
     OpenPcap(pcap_file);
 
     // Verify file was created
-    ASSERT_TRUE(std::filesystem::exists(pcap_file)) << "PCAP file was not created";
+    ASSERT_TRUE(std::filesystem::exists(pcap_file))
+        << "PCAP file " << pcap_file << " was not created";
 
     // Verify file is not empty and has proper header
     ASSERT_TRUE(PcapUtils::ValidatePcapHeader(pcap_file))
-        << "PCAP file has invalid header";
+        << "PCAP file " << pcap_file << " has invalid header";
 
+    // Close once at the end
     ClosePcap();
 }
-
 // Test 2: Wireshark compliance test with UDP packet
 TEST_F(PcapSnifferTest, UdpPacketIsWiresharkCompliant)
 {
@@ -187,48 +184,59 @@ TEST_F(PcapSnifferTest, TcpPacketIsWiresharkCompliant)
         << "TCP PCAP file is not Wireshark compliant";
 }
 
-// Test 4: Packet capture with actual network traffic
+// Test 4: Packet capture with actual network traffic using QbbNetDevice
 TEST_F(PcapSnifferTest, CapturesNetworkPackets)
 {
     std::string pcap_file = test_dir + "/test_capture.pcap";
 
-    NodeContainer nodes = CreateTestNodes(2);
-    SetOutputFile(pcap_file);
+    // Create simple 2-node QbbNetDevice topology
+    NodeContainer nodes = PcapUtils::CreateSimpleQbbTopology("10Gbps", "10us");
+
+    // Attach PCAP sniffer
     AttachPcapSnifferToAllDevices(nodes, pcap_file);
 
-    // Generate some network traffic
-    uint16_t port = 9; // Discard port
+    // Set up packet sink (receiver) on node 0
+    uint16_t port = 9;
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkApp = sink.Install(nodes.Get(0));
     sinkApp.Start(Seconds(0.0));
     sinkApp.Stop(Seconds(2.0));
 
+    // Set up traffic generator (sender) on node 1
+    Ipv4Address targetAddr = PcapUtils::GetNodeAddress(nodes.Get(0));
     OnOffHelper client("ns3::UdpSocketFactory",
-                       InetSocketAddress(Ipv4Address("10.1.1.2"), port));
-    client.SetAttribute("DataRate", StringValue("1Mbps"));
-    client.SetAttribute("PacketSize", UintegerValue(512));
+                       InetSocketAddress(targetAddr, port));
+    client.SetAttribute("DataRate", StringValue("1Gbps"));
+    client.SetAttribute("PacketSize", UintegerValue(1024));
+    client.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+    client.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
 
     ApplicationContainer clientApp = client.Install(nodes.Get(1));
-    clientApp.Start(Seconds(1.0));
+    clientApp.Start(Seconds(0.5));
     clientApp.Stop(Seconds(1.5));
 
     // Run simulation
-    Simulator::Stop(Seconds(3.0));
+    Simulator::Stop(Seconds(2.5));
     Simulator::Run();
     Simulator::Destroy();
 
-    // Verify capture file
-    ASSERT_TRUE(std::filesystem::exists(pcap_file));
-    ASSERT_GT(std::filesystem::file_size(pcap_file), 24)
-        << "PCAP file should be larger than just header";
+    // Verify capture file exists
+    ASSERT_TRUE(std::filesystem::exists(pcap_file))
+        << "PCAP file was not created";
 
+    // Verify file has content
+    ASSERT_GT(std::filesystem::file_size(pcap_file), 100)
+        << "PCAP file should contain captured packets";
+
+    // Validate with tshark
     ASSERT_TRUE(PcapUtils::ValidateWithTshark(pcap_file))
         << "Captured packets are not Wireshark compliant";
 
-    // Verify we captured some packets
+    // Verify packet count
     int packet_count = PcapUtils::GetPacketCount(pcap_file);
-    EXPECT_GT(packet_count, 0) << "Should have captured at least one packet";
+    EXPECT_GT(packet_count, 0) 
+        << "Should have captured at least one packet, got: " << packet_count;
 }
 
 // Test 5: Multiple packet types and protocols

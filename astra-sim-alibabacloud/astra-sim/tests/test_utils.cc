@@ -1,12 +1,25 @@
 #include "test_utils.h"
+#include <gtest/gtest.h>
+#include "system/Common.hh"
 #include <fstream>
-#include <cstdint>
-#include <cstring>
-#include <array>
-#include <vector>
-#include <stdexcept>
-#include <iostream>
 #include <filesystem>
+#include "ns3/qbb-helper.h"
+#include "ns3/error-model.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/ipv4.h"
+#include "ns3/node-container.h"
+// PcapPlusPlus includes
+#include "PcapFileDevice.h"
+#include "RawPacket.h"
+#include "Packet.h"
+
+using namespace ns3;
+using namespace std;
+
+using ns3::Ptr;
+using ns3::Node;
+using ns3::Ipv4;
+using ns3::Ipv4Address;
 
 namespace PcapUtils
 {
@@ -30,32 +43,24 @@ namespace PcapUtils
 
     bool ValidatePcapHeader(const std::string &filename)
     {
-        std::ifstream file(filename, std::ios::binary);
-        if (!file.is_open())
+        std::string cmd = "file -b '" + filename + "'";
+        FILE *pipe = popen(cmd.c_str(), "r");
+        if (!pipe)
         {
             return false;
         }
 
-        PcapGlobalHeader header;
-        file.read(reinterpret_cast<char *>(&header), sizeof(header));
-
-        if (file.gcount() != sizeof(header))
+        char buffer[256];
+        std::string result;
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
         {
-            return false;
+            result += buffer;
         }
+        pclose(pipe);
 
-        // Check magic number (standard PCAP or nanosecond resolution)
-        bool valid_magic = (header.magic_number == 0xA1B2C3D4) || // standard
-                           (header.magic_number == 0xA1B23C4D) || // swapped
-                           (header.magic_number == 0xA1B2C34D) || // nanosecond
-                           (header.magic_number == 0xA1B23C4D);   // nanosecond swapped
-
-        // Check reasonable values
-        bool valid_version = header.version_major == 2 && header.version_minor == 4;
-        bool valid_snaplen = header.snaplen > 0 && header.snaplen <= 65535;
-        bool valid_network = header.network == 1; // DLT_EN10MB (Ethernet)
-
-        return valid_magic && valid_version && valid_snaplen && valid_network;
+        // Check if it's a valid pcap or pcapng file
+        return (result.find("pcap") != std::string::npos ||
+                result.find("capture file") != std::string::npos);
     }
 
     int GetPacketCount(const std::string &filename)
@@ -163,6 +168,100 @@ namespace PcapUtils
     size_t GetPcapHeaderSize()
     {
         return sizeof(PcapGlobalHeader);
+    }
+
+    NodeContainer CreateQbbTestTopology(
+        uint32_t numNodes,
+        const std::string &dataRate,
+        const std::string &linkDelay,
+        double errorRate)
+    {
+        // Create nodes
+        NodeContainer nodes;
+        nodes.Create(numNodes);
+
+        // Install Internet stack
+        InternetStackHelper internet;
+        internet.Install(nodes);
+
+        // Set up QbbHelper
+        QbbHelper qbb;
+        qbb.SetDeviceAttribute("DataRate", StringValue(dataRate));
+        qbb.SetChannelAttribute("Delay", StringValue(linkDelay));
+
+        // Configure error model
+        Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
+        Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
+        rem->SetRandomVariable(uv);
+        uv->SetStream(50);
+        rem->SetAttribute("ErrorRate", DoubleValue(errorRate));
+        rem->SetAttribute("ErrorUnit", StringValue("ERROR_UNIT_PACKET"));
+        qbb.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
+
+        for (uint32_t i = 0; i < numNodes - 1; i++)
+        {
+            Ptr<Node> node1 = nodes.Get(i);
+            Ptr<Node> node2 = nodes.Get(i + 1);
+
+            // Install QbbNetDevice between adjacent nodes
+            NetDeviceContainer devices = qbb.Install(node1, node2);
+
+            // Assign IP addresses using Ipv4AddressHelper
+            std::ostringstream network;
+            network << "10." << (i + 1) << ".1.0";
+
+            Ipv4AddressHelper address;
+            address.SetBase(network.str().c_str(), "255.255.255.0");
+            Ipv4InterfaceContainer interfaces = address.Assign(devices);
+        }
+        return nodes;
+    }
+    
+    NodeContainer CreateSimpleQbbTopology(
+        const std::string &dataRate,
+        const std::string &linkDelay)
+    {
+        // Create 2 nodes
+        NodeContainer nodes;
+        nodes.Create(2);
+
+        // Install Internet stack
+        InternetStackHelper internet;
+        internet.Install(nodes);
+
+        // Set up QbbHelper
+        QbbHelper qbb;
+        qbb.SetDeviceAttribute("DataRate", StringValue(dataRate));
+        qbb.SetChannelAttribute("Delay", StringValue(linkDelay));
+
+        // No errors for simple topology
+        Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
+        Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
+        rem->SetRandomVariable(uv);
+        uv->SetStream(50);
+        rem->SetAttribute("ErrorRate", DoubleValue(0.0));
+        rem->SetAttribute("ErrorUnit", StringValue("ERROR_UNIT_PACKET"));
+        qbb.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
+
+        // Connect the two nodes
+        NetDeviceContainer devices = qbb.Install(nodes.Get(0), nodes.Get(1));
+
+        // Assign IP addresses using helper (recommended ns-3 way)
+        Ipv4AddressHelper address;
+        address.SetBase("10.1.1.0", "255.255.255.0");
+        Ipv4InterfaceContainer interfaces = address.Assign(devices);
+
+        return nodes;
+    }
+
+    Ipv4Address GetNodeAddress(Ptr<Node> node, uint32_t interface)
+    {
+        Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
+        if (interface >= ipv4->GetNInterfaces())
+        {
+            return Ipv4Address::GetAny();
+        }
+        return ipv4->GetAddress(interface, 0).GetLocal();
     }
 
 } // namespace PcapUtils

@@ -3,6 +3,23 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>  
+#include <ns3/test.h>
+#include <ns3/core-module.h>
+#include <ns3/network-module.h>
+#include <ns3/internet-module.h>
+#include <ns3/csma-module.h>
+#include <ns3/applications-module.h>
+#include <ns3/qbb-net-device.h>
+#include "ns3/custom-header.h"
+#include "ns3/ptr.h"
+#include "ns3/packet.h"
+#include "ns3/node-container.h"
+#include "ns3/net-device.h"
+#include "ns3/address.h"
+#include "ns3/node.h"
+#include "ns3/ipv4.h"           // ADD THIS
+#include "ns3/ipv4-address.h"   // ADD THIS
 
 namespace PcapUtils
 {
@@ -52,6 +69,40 @@ namespace PcapUtils
      */
     std::string GetPcapInfo(const std::string &filename);
 
+    /**
+     * @brief Create a network topology with QbbNetDevice connections for testing
+     *
+     * @param numNodes Number of nodes to create
+     * @param dataRate Data rate for the links (e.g., "10Gbps", "25Gbps", "100Gbps")
+     * @param linkDelay Link delay (e.g., "10us", "100ns")
+     * @param errorRate Packet error rate (0.0 for no errors)
+     * @return NodeContainer with configured nodes and QbbNetDevice connections
+     */
+    ns3::NodeContainer CreateQbbTestTopology(
+        uint32_t numNodes,
+        const std::string &dataRate = "10Gbps",
+        const std::string &linkDelay = "10us",
+        double errorRate = 0.0);
+
+    /**
+     * @brief Create a simple two-node QbbNetDevice topology for basic tests
+     *
+     * @param dataRate Data rate for the link (default: "10Gbps")
+     * @param linkDelay Link delay (default: "10us")
+     * @return NodeContainer with 2 nodes connected by QbbNetDevice
+     */
+    ns3::NodeContainer CreateSimpleQbbTopology(
+        const std::string &dataRate = "10Gbps",
+        const std::string &linkDelay = "10us");
+
+    /**
+     * @brief Get the IP address of a node
+     *
+     * @param node The node to get the address from
+     * @param interface Interface index (default: 1, as 0 is loopback)
+     * @return Ipv4Address The IP address of the node
+     */
+    ns3::Ipv4Address GetNodeAddress(ns3::Ptr<ns3::Node> node, uint32_t interface = 1);
 } // namespace PcapUtils
 
 #endif // TEST_UTILS_H
