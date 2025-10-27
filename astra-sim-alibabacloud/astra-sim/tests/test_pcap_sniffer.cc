@@ -192,8 +192,6 @@ TEST_F(PcapSnifferTest, CapturesNetworkPackets)
     // Create simple 2-node QbbNetDevice topology
     NodeContainer nodes = PcapUtils::CreateSimpleQbbTopology("10Gbps", "10us");
 
-    // Attach PCAP sniffer
-    AttachPcapSnifferToAllDevices(nodes, pcap_file);
 
     // Set up packet sink (receiver) on node 0
     uint16_t port = 9;
@@ -215,6 +213,9 @@ TEST_F(PcapSnifferTest, CapturesNetworkPackets)
     ApplicationContainer clientApp = client.Install(nodes.Get(1));
     clientApp.Start(Seconds(0.5));
     clientApp.Stop(Seconds(1.5));
+/////
+    // Attach PCAP sniffer
+    AttachPcapSnifferToAllDevices(nodes, pcap_file);
 
     // Run simulation
     Simulator::Stop(Seconds(2.5));

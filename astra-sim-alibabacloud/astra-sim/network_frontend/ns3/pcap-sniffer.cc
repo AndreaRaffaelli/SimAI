@@ -225,7 +225,7 @@ namespace ns3
             }
         }
 
-        void WritePacketToPcap(ns3::Ptr<ns3::Packet const> pkt, ns3::CustomHeader const& ch)
+        void WritePacketToPcap(ns3::Ptr<ns3::Packet const> pkt, ns3::CustomHeader const &ch)
         {
             NS_ASSERT_MSG(pkt != nullptr, "Null packet passed to WritePacketToPcap");
 
@@ -354,24 +354,73 @@ namespace ns3
         }
 
         // Free functions used as callbacks for Config::ConnectWithoutContext
-        static void _pcap_trace_cb_pkt(Ptr<Packet> pkt, CustomHeader ch)
+        static void _pcap_trace_cb_pkt(Ptr<const Packet> pkt, CustomHeader ch)
         {
             pcap_sniffer::WritePacketToPcap(pkt, ch);
         }
 
         void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath)
         {
+            // Create output directory if needed
+            size_t pos = outPath.find_last_of('/');
+            if (pos != std::string::npos)
+            {
+                std::string dir = outPath.substr(0, pos);
+                system(("mkdir -p " + dir).c_str());
+            }
+
             // Open pcap
             pcap_sniffer::OpenPcap(outPath);
 
-            // Connect to QbbNetDevice trace sources
-            Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketTx",
-                                          MakeCallback(&_pcap_trace_cb_pkt));
-            Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::QbbNetDevice/PacketRx",
-                                          MakeCallback(&_pcap_trace_cb_pkt));
+            // Iterate through all nodes in the container
+            for (uint32_t i = 0; i < nodes.GetN(); ++i)
+            {
+                Ptr<Node> node = nodes.Get(i);
+
+                // Iterate through all devices on this node
+                for (uint32_t j = 0; j < node->GetNDevices(); ++j)
+                {
+                    Ptr<NetDevice> device = node->GetDevice(j);
+                    Ptr<QbbNetDevice> qbbDevice = device->GetObject<QbbNetDevice>();
+                    if (qbbDevice)
+                    {
+                        // Connect to PacketTx trace source
+                        qbbDevice->TraceConnectWithoutContext(
+                            "PacketTx",
+                            MakeCallback(&_pcap_trace_cb_pkt));
+
+                        // Connect to PacketRx trace source
+                        qbbDevice->TraceConnectWithoutContext(
+                            "PacketRx",
+                            MakeCallback(&_pcap_trace_cb_pkt));
+
+                        if (debug_mode && debug_ofs.is_open())
+                        {
+                            debug_ofs << "PcapSniffer: Attached to Node " << node->GetId()
+                                      << " Device " << j << " (QbbNetDevice)" << std::endl;
+                        }
+                    }
+                    else
+                    {
+                        // If not a QbbNetDevice, try generic NetDevice trace sources
+                        // You can add support for other device types here
+                        if (debug_mode && debug_ofs.is_open())
+                        {
+                            debug_ofs << "PcapSniffer: Skipped Node " << node->GetId()
+                                      << " Device " << j << " (not a QbbNetDevice)" << std::endl;
+                        }
+                    }
+                }
+            }
 
             // Schedule PCAP file closure
             Simulator::Schedule(Seconds(simulator_stop_time), &pcap_sniffer::ClosePcap);
+
+            if (debug_mode && debug_ofs.is_open())
+            {
+                debug_ofs << "PcapSniffer: Attached to " << nodes.GetN()
+                          << " nodes, PCAP will close at " << simulator_stop_time << "s" << std::endl;
+            }
         }
 
     } // namespace pcap_sniffer

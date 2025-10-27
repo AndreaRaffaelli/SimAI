@@ -47,13 +47,19 @@ function compile {
     #     echo ""${INPUT_DIR}"/config/SimAI.conf is not exist"
     #     cp "${INPUT_DIR}"/config/SimAI.conf "${SIM_LOG_DIR}"/config/SimAI.conf
     # fi
-    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${NS3_DIR}"/simulation/scratch/
-    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${NS3_DIR}"/simulation/scratch/
+    ASTRASIM_SCRATCH_DIR="${NS3_DIR}/simulation/scratch/"
+
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${ASTRASIM_SCRATCH_DIR}"/
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${ASTRASIM_SCRATCH_DIR}"/
+
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/CMakeLists.txt "${ASTRASIM_SCRATCH_DIR}"/
+
     rm -rf "${NS3_APPLICATION}"/astra-sim 
     cp -r "${ASTRA_SIM_DIR}" "${NS3_APPLICATION}"/
     cd "${NS3_DIR}/simulation"
     CC='gcc' CXX='g++' 
-    ./ns3 configure -d debug --enable-mtp
+    # ./ns3 configure -d debug --enable-mtp
+    ./ns3 configure -d debug --enable-mtp -- -DCMAKE_PREFIX_PATH=/home/linuxbrew/.linuxbrew
     ./ns3 build
 
     cd "${SCRIPT_DIR:?}"
@@ -112,6 +118,7 @@ function compile {
 # }
 
 function debug {
+    cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/CMakeLists.txt "${NS3_DIR}"/simulation/scratch/
     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.cc "${NS3_DIR}"/simulation/scratch/
     cp "${ASTRA_SIM_DIR}"/network_frontend/ns3/*.h "${NS3_DIR}"/simulation/scratch/
     cd "${NS3_DIR}/simulation"
@@ -123,7 +130,6 @@ function debug {
 
     cd "${SCRIPT_DIR:?}"
 }
-
 # Main Script
 case "$1" in
 -l|--clean)

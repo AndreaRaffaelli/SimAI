@@ -45,7 +45,7 @@
 #include <ns3/sim-setting.h>
 #include <ns3/switch-node.h>
 #include <ns3/nvswitch-node.h>
-#include "system/Common.hh"
+#include "astra-sim/system/Common.hh"
 #include "pcap-sniffer.h"
 #include "pcap-sniffer.cc"
 #include <atomic>

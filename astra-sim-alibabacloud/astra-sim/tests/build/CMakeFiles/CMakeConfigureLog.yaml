@@ -922,3 +922,47 @@ events:
         1.10.1 (with TPACKET_V3)
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_run-v1"
+    backtrace:
+      - "/home/linuxbrew/.linuxbrew/lib/cmake/pcapplusplus/FindPCAP.cmake:111 (try_run)"
+      - "/usr/local/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "/home/linuxbrew/.linuxbrew/lib/cmake/pcapplusplus/PcapPlusPlusConfig.cmake:48 (find_dependency)"
+      - "CMakeLists.txt:12 (find_package)"
+    directories:
+      source: "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp"
+      binary: "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/linuxbrew/.linuxbrew/lib/cmake/pcapplusplus/modules;/home/linuxbrew/.linuxbrew/lib/cmake/pcapplusplus"
+    buildResult:
+      variable: "COMPILE_RESULT_VAR"
+      cached: true
+      stdout: |
+        Change Dir: '/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /usr/local/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e3ca6/fast
+        gmake[1]: Entering directory '/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e3ca6.dir/build.make CMakeFiles/cmTC_e3ca6.dir/build
+        gmake[2]: Entering directory '/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_e3ca6.dir/detect_pcap_version.cpp.o
+        /usr/bin/c++   -std=gnu++17 -o CMakeFiles/cmTC_e3ca6.dir/detect_pcap_version.cpp.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/detect_pcap_version.cpp
+        Linking CXX executable cmTC_e3ca6
+        /usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e3ca6.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_e3ca6.dir/detect_pcap_version.cpp.o -o cmTC_e3ca6  /usr/lib/x86_64-linux-gnu/libpcap.so
+        gmake[2]: Leaving directory '/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp'
+        gmake[1]: Leaving directory '/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/tests/build/CMakeFiles/CMakeTmp'
+        
+      exitCode: 0
+    runResult:
+      variable: "RUN_RESULT_VAR"
+      cached: true
+      stdout: |
+        1.10.1 (with TPACKET_V3)
+      exitCode: 0
+...

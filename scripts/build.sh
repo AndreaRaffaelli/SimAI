@@ -23,6 +23,11 @@ function compile {
         cd "${SIMAI_DIR:?}"
         ./build.sh -lr ns3
         ./build.sh -c ns3    
+        # If SOURCE_NS3_BIN_DIR not exist throw error
+        if [ ! "${SOURCE_NS3_BIN_DIR:?}" ]; then
+            echo "Error: Source NS3 binary executable ${SOURCE_NS3_BIN_DIR:?} does not exist."
+            exit 1
+        fi
         ln -s "${SOURCE_NS3_BIN_DIR:?}" "${TARGET_BIN_DIR:?}"/SimAI_simulator;;
     "phy")
         mkdir -p "${TARGET_BIN_DIR:?}"
