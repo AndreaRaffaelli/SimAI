@@ -13,3 +13,4 @@ test/log/
 *.debug
 
 pcap_sniffer.debug
+*.cvs
