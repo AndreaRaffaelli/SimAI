@@ -235,42 +235,24 @@ public:
   }
 };
 
-struct user_param
-{
-  int thread;
-  string workload;
-  string network_topo;
-  string network_conf;
-  int pcap_trace;
-  user_param()
-  {
-    thread = 1;
-    workload = "";
-    network_topo = "";
-    network_conf = "";
-    pcap_trace = 0;
-  };
-  ~user_param() {};
-};
-
-static int user_param_prase(int argc, char *argv[], struct user_param *user_param)
+static int
+user_param_prase(int argc, char *argv[], struct user_param *user_param)
 {
   int opt;
-  while ((opt = getopt(argc, argv, "ht:w:g:s:n:c:p")) != -1)
+  while ((opt = getopt(argc, argv, "ht:w:g:s:n:c:p:r")) != -1)
   {
     switch (opt)
     {
     case 'h':
-      /* code */
-      std::cout << "-t    number of threads,default 1" << std::endl;
-      std::cout << "-w    workloads default none " << std::endl;
-      std::cout << "-n    network topo" << std::endl;
-      std::cout << "-c    network_conf" << std::endl;
-      std::cout << "-p    enable pcap trace" << std::endl;
+      std::cout << "-t <int>  number of threads, default 1\n";
+      std::cout << "-w <file> workloads, default none\n";
+      std::cout << "-n <file> network topo\n";
+      std::cout << "-c <file> network_conf\n";
+      std::cout << "-p <file> enable pcapng trace\n";
+      std::cout << "-r        enable realtime simulation\n";
       return 1;
-      break;
     case 't':
-      user_param->thread = stoi(optarg);
+      user_param->thread = std::stoi(optarg);
       break;
     case 'w':
       user_param->workload = optarg;
@@ -282,10 +264,22 @@ static int user_param_prase(int argc, char *argv[], struct user_param *user_para
       user_param->network_conf = optarg;
       break;
     case 'p':
+    {
       user_param->pcap_trace = 1;
+      if (optarg != nullptr && std::strlen(optarg) > 0)
+        user_param->pcap_file = optarg; // user‑provided name
+      else
+      {
+        std::cerr << "Please provide pcap file name after -p option" << std::endl;
+        exit(1);
+      }
+      break;
+    }
+    case 'r':
+      user_param->realtime = 1;
       break;
     default:
-      std::cerr << "-h    help message" << std::endl;
+      std::cerr << "-h    help message\n";
       return 1;
     }
   }
@@ -307,10 +301,14 @@ int main(int argc, char *argv[])
 #endif
 
   // Switch to Ns3 Realtime Simulator
-  GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
-  // std::cout << "Realtime mode: " << (Simulator::IsRealtime() ? "ON" : "OFF") << std::endl;
-  
-  if (main1(user_param.network_topo, user_param.network_conf, user_param.pcap_trace) == -1)
+  if (user_param.realtime)
+  {
+    GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
+    NcclLog->writeLog(NcclLogLevel::INFO, "Enable Realtime Simulator");
+    std::cout << "Realtime Simulation Enabled" << std::endl;
+  }
+
+  if (main1(user_param) == -1)
   {
     cout << "read network topo or conf error" << endl;
     return -1;

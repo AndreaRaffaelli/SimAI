@@ -42,10 +42,10 @@ namespace ns3
         static bool pcap_opened = false;
         static std::string output_filename;
 
-        void SetOutputFile(const std::string &filename)
+        void SetDebugMode(bool enable, const std::string &filename)
         {
+            debug_mode = enable;
             output_filename = filename;
-
             if (debug_mode)
             {
                 // Ensure parent dir exists
@@ -53,26 +53,15 @@ namespace ns3
                 if (pos != std::string::npos)
                 {
                     std::string dir = filename.substr(0, pos);
-                    system(("mkdir -p " + dir).c_str());
+                    if(system(("mkdir -p " + dir).c_str())){
+                        std::cerr << "PcapSniffer: cannot create debug directory " << dir << std::endl;
+                    }
                 }
 
-                debug_ofs.open(filename + ".debug", std::ios::out);
+                debug_ofs.open(filename, std::ios::out);
                 if (!debug_ofs.is_open())
                 {
                     std::cerr << "PcapSniffer: cannot open debug file " << filename << std::endl;
-                }
-            }
-        }
-
-        void SetDebugMode(bool enable)
-        {
-            debug_mode = enable;
-            if (debug_mode && !debug_ofs.is_open())
-            {
-                debug_ofs.open("pcap_sniffer.debug", std::ios::out);
-                if (!debug_ofs.is_open())
-                {
-                    std::cerr << "PcapSniffer: cannot open default debug file pcap_sniffer.debug" << std::endl;
                     debug_mode = false;
                 }
             }
@@ -80,14 +69,6 @@ namespace ns3
 
         void OpenPcap(const std::string &filename)
         {
-            // Ensure parent directory exists
-            size_t pos = filename.find_last_of('/');
-            if (pos != std::string::npos)
-            {
-                std::string dir = filename.substr(0, pos);
-                system(("mkdir -p " + dir).c_str());
-            }
-
             // Create PcapNg file writer using PcapPlusPlus
             pcap_writer = std::make_unique<pcpp::PcapNgFileWriterDevice>(filename.c_str());
 
@@ -361,14 +342,6 @@ namespace ns3
 
         void AttachPcapSnifferToAllDevices(const NodeContainer &nodes, const std::string &outPath)
         {
-            // Create output directory if needed
-            size_t pos = outPath.find_last_of('/');
-            if (pos != std::string::npos)
-            {
-                std::string dir = outPath.substr(0, pos);
-                system(("mkdir -p " + dir).c_str());
-            }
-
             // Open pcap
             pcap_sniffer::OpenPcap(outPath);
 

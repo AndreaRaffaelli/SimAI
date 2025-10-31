@@ -50,6 +50,28 @@
 using namespace ns3;
 using namespace std;
 
+struct user_param
+{
+  int thread;
+  string workload;
+  string network_topo;
+  string network_conf;
+  int pcap_trace;
+  string pcap_file;
+  int realtime;
+  user_param()
+  {
+    thread = 1;
+    workload = "";
+    network_topo = "";
+    network_conf = "";
+    pcap_trace = 0;
+    pcap_file = "";
+    realtime = 0;
+  };
+  ~user_param() {};
+};
+
 const char *logLevelEnv = std::getenv("AS_LOG_LEVEL");
 NcclLogLevel logLevel = logLevelEnv ? static_cast<NcclLogLevel>(std::atoi(logLevelEnv)) : NcclLogLevel::INFO;
 
@@ -427,15 +449,15 @@ void send_finish(FILE *fout, Ptr<RdmaQueuePair> q)
     notify_sender_sending_finished(sid, did, all_sent_chunksize, flowTag);
   }
 }
-int main1(string network_topo, string network_conf, bool pcap_trace)
+int main1(struct user_param user_param)
 {
   clock_t begint, endt;
   begint = clock();
 
-  if (!ReadConf(network_topo, network_conf))
+  if (!ReadConf(user_param.network_topo, user_param.network_conf))
     return -1;
   SetConfig();
-  SetPcapTracing(pcap_trace, "pcap_trace.pcap");
+  SetPcapTracing(user_param.pcap_trace, user_param.pcap_file);
   SetupNetwork(qp_finish, send_finish);
 
   std::cout << "Running Simulation.\n";

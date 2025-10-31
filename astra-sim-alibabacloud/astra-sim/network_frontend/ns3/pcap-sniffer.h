@@ -63,24 +63,15 @@ namespace ns3
          * Supports IPv4, IPv6, and raw payloads.
          */
         void WritePacketToPcap(Ptr<const Packet> pkt, const CustomHeader &ch);
-
-        /**
-         * \brief Set out file path for PCAP output
-         * \param filename The path to the output PCAP file
-         *
-         * This function:
-         * - Sets the output file path for PCAP captures
-         */
-        void SetOutputFile(const std::string &filename);
-
+        
         /**
          * \brief Set debug mode for PCAP sniffer
          * \param enable true to enable debug output, false to disable
-         *
+         * \param filename The path to the debug output file
          * This function:
          * - Enables or disables debug output for the PCAP sniffer
          */
-        void SetDebugMode(bool enable);
+        void SetDebugMode(bool enable, const std::string &filename);
 
         /**
          * \brief Attach PCAP sniffer to all devices in a node container
