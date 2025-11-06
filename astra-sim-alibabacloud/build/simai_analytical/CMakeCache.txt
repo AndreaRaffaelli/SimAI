@@ -233,6 +233,9 @@ SimAI_analytical_IS_TOP_LEVEL:STATIC=OFF
 //Value Computed by CMake
 SimAI_analytical_SOURCE_DIR:STATIC=/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical
 
+//No help, variable specified on the command line.
+USE_ANALYTICAL:UNINITIALIZED=TRUE
+
 
 ########################
 # INTERNAL cache entries

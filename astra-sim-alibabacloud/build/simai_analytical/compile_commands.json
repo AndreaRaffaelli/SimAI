@@ -1,0 +1,350 @@
+[
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/AstraParamParse.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/AstraParamParse.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/AstraParamParse.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/AstraParamParse.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/BaseStream.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/BaseStream.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/BaseStream.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BaseStream.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/BasicEventHandlerData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/BasicEventHandlerData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/BasicEventHandlerData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BasicEventHandlerData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/CollectivePhase.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/CollectivePhase.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/CollectivePhase.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/CollectivePhase.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/DMA_Request.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/DMA_Request.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/DMA_Request.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/DMA_Request.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/DataSet.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/DataSet.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/DataSet.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/DataSet.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/IntData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/IntData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/IntData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/IntData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/LogGP.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/LogGP.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/LogGP.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/LogGP.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MemBus.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MemBus.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MemBus.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MemBus.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MemMovRequest.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MemMovRequest.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MemMovRequest.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MemMovRequest.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclChannel.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclChannel.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclChannel.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclChannel.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclGroup.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclGroup.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclGroup.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclGroup.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclLog.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclLog.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MockNcclLog.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MockNcclLog.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/MyPacket.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MyPacket.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/MyPacket.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/MyPacket.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/NetworkStat.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/NetworkStat.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/NetworkStat.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/NetworkStat.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/PacketBundle.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/PacketBundle.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/PacketBundle.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/PacketBundle.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/QueueLevelHandler.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/QueueLevelHandler.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/QueueLevelHandler.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/QueueLevelHandler.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/QueueLevels.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/QueueLevels.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/QueueLevels.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/QueueLevels.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/RecvPacketEventHadndlerData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RecvPacketEventHadndlerData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RecvPacketEventHadndlerData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/RecvPacketEventHadndlerData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/RendezvousRecvData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RendezvousRecvData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RendezvousRecvData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/RendezvousRecvData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/RendezvousSendData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RendezvousSendData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/RendezvousSendData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/RendezvousSendData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/SendPacketEventHandlerData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SendPacketEventHandlerData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SendPacketEventHandlerData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SendPacketEventHandlerData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/SharedBusStat.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SharedBusStat.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SharedBusStat.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SharedBusStat.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/SimRecvCaller.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SimRecvCaller.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SimRecvCaller.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SimRecvCaller.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/SimSendCaller.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SimSendCaller.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/SimSendCaller.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SimSendCaller.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/StatData.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StatData.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StatData.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/StatData.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/StreamBaseline.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StreamBaseline.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StreamBaseline.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/StreamBaseline.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/StreamStat.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StreamStat.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/StreamStat.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/StreamStat.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/Sys.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/Sys.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/Sys.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/Sys.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/Usage.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/Usage.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/Usage.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/Usage.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/UsageTracker.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/UsageTracker.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/UsageTracker.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/UsageTracker.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/calbusbw.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/calbusbw.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/calbusbw.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/calbusbw.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/Algorithm.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/Algorithm.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/Algorithm.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/Algorithm.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/AllToAll.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/AllToAll.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/AllToAll.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/AllToAll.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/DoubleBinaryTreeAllReduce.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/DoubleBinaryTreeAllReduce.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/DoubleBinaryTreeAllReduce.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/DoubleBinaryTreeAllReduce.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/HalvingDoubling.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/HalvingDoubling.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/HalvingDoubling.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/HalvingDoubling.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/NcclTreeFlowModel.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/NcclTreeFlowModel.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/NcclTreeFlowModel.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/NcclTreeFlowModel.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/collective/Ring.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/Ring.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/collective/Ring.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/collective/Ring.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/fast-backend/FastBackEnd.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/fast-backend/FastBackEnd.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/fast-backend/FastBackEnd.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/fast-backend/FastBackEnd.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/memory/SimpleMemory.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/memory/SimpleMemory.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/memory/SimpleMemory.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/memory/SimpleMemory.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/scheduling/OfflineGreedy.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/scheduling/OfflineGreedy.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/scheduling/OfflineGreedy.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/scheduling/OfflineGreedy.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/BasicLogicalTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/BasicLogicalTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/BasicLogicalTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/BasicLogicalTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/BinaryTree.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/BinaryTree.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/BinaryTree.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/BinaryTree.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/ComplexLogicalTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/ComplexLogicalTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/ComplexLogicalTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/ComplexLogicalTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/DoubleBinaryTreeTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/DoubleBinaryTreeTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/DoubleBinaryTreeTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/DoubleBinaryTreeTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/GeneralComplexTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/GeneralComplexTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/GeneralComplexTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/GeneralComplexTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/LocalRingGlobalBinaryTree.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LocalRingGlobalBinaryTree.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LocalRingGlobalBinaryTree.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/LocalRingGlobalBinaryTree.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/LocalRingNodeA2AGlobalDBT.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LocalRingNodeA2AGlobalDBT.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LocalRingNodeA2AGlobalDBT.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/LocalRingNodeA2AGlobalDBT.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/LogicalTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LogicalTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/LogicalTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/LogicalTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/Node.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/Node.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/Node.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/Node.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/RingTopology.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/RingTopology.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/RingTopology.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/RingTopology.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/system/topology/Torus3D.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/Torus3D.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/system/topology/Torus3D.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/topology/Torus3D.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/workload/CSVWriter.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/CSVWriter.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/CSVWriter.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/workload/CSVWriter.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/workload/Layer.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/Layer.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/Layer.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/workload/Layer.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/AstraSim",
+  "command": "/usr/bin/c++ -DANALYTI -I/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/../.. -std=gnu++11 -o CMakeFiles/AstraSim.dir/astra-sim/workload/Workload.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/Workload.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/workload/Workload.cc",
+  "output": "AstraSim/CMakeFiles/AstraSim.dir/astra-sim/workload/Workload.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/simai_analytical",
+  "command": "/usr/bin/c++  -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/../../.. -std=gnu++17 -o CMakeFiles/SimAI_analytical.dir/AnaSim.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnaSim.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnaSim.cc",
+  "output": "simai_analytical/CMakeFiles/SimAI_analytical.dir/AnaSim.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/simai_analytical",
+  "command": "/usr/bin/c++  -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/../../.. -std=gnu++17 -o CMakeFiles/SimAI_analytical.dir/AnalyticalAstra.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnalyticalAstra.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnalyticalAstra.cc",
+  "output": "simai_analytical/CMakeFiles/SimAI_analytical.dir/AnalyticalAstra.cc.o"
+},
+{
+  "directory": "/home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical/simai_analytical",
+  "command": "/usr/bin/c++  -I/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/../../.. -std=gnu++17 -o CMakeFiles/SimAI_analytical.dir/AnalyticalNetwork.cc.o -c /home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnalyticalNetwork.cc",
+  "file": "/home/roc/SimAI/astra-sim-alibabacloud/astra-sim/network_frontend/analytical/AnalyticalNetwork.cc",
+  "output": "simai_analytical/CMakeFiles/SimAI_analytical.dir/AnalyticalNetwork.cc.o"
+}
+]

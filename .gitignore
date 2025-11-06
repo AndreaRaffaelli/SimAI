@@ -10,3 +10,10 @@ test/log/
 .DS_Store
 *.pcap
 *.txt
+<<<<<<< HEAD
+=======
+*.debug
+
+pcap_sniffer.debug
+*.cvs
+>>>>>>> pcap-sniffer

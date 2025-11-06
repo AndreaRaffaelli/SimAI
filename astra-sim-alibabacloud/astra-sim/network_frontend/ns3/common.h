@@ -45,18 +45,24 @@
 #include <ns3/sim-setting.h>
 #include <ns3/switch-node.h>
 #include <ns3/nvswitch-node.h>
-
+#include "astra-sim/system/Common.hh"
+#include "pcap-sniffer.h"
+#include "pcap-sniffer.cc"
 #include <atomic>
+#include <filesystem>
 
 using namespace ns3;
 using namespace std;
+using namespace pcap_sniffer;
 
 NS_LOG_COMPONENT_DEFINE("GENERIC_SIMULATION");
 
 uint32_t cc_mode = 1;
 bool enable_qcn = true, use_dynamic_pfc_threshold = true;
 uint32_t packet_payload_size = 1000, l2_chunk_size = 0, l2_ack_interval = 0;
-double pause_time = 5, simulator_stop_time = 3.01;
+double pause_time = 5;
+extern double simulator_stop_time = 2000000000;
+
 std::string data_rate, link_delay, topology_file, flow_file, trace_file,
     trace_output_file;
 std::string fct_output_file = "fct.txt";
@@ -1326,9 +1332,6 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
   {
     NS_LOG_INFO("Enabling PCAP tracing...");
 
-    // Create the output directory if it doesn't exist
-    system(("mkdir -p " + pcap_output_dir).c_str());
-
     // Get the current date in YYYYMMDD format
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
@@ -1336,8 +1339,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
     // Enable PCAP tracing for all devices
-    qbb.EnablePcapAll(pcap_output_dir + "/" + current_date, true);
-
+    qbb.EnablePcapAll(pcap_output_dir+"/"+current_date, true);
     // Specific devcies can be enabled as needed:
     // for (uint32_t i = 0; i < node_num; i++) {
     //     if (n.Get(i)->GetNodeType() == NodeType::SWITCH) {  // Solo host
@@ -1393,9 +1395,16 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
   }
 }
 
-void SetPcapTracing(bool pcap_trace, string pcap_dir)
+void SetPcapTracing(bool pcap_trace, const std::string &pcap_dir)
 {
   enable_pcap_trace = pcap_trace;
-  pcap_output_dir = pcap_dir;
+  if (!enable_pcap_trace) { pcap_output_dir.clear(); return; }
+  try {
+    std::filesystem::create_directories(pcap_dir);
+    pcap_output_dir = std::filesystem::absolute(pcap_dir).lexically_normal().string();
+  } catch (const std::exception &e) {
+    std::cerr << "Error: cannot create pcap dir: " << e.what() << '\n';
+    std::exit(1);
+  }
 }
 #endif
