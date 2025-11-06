@@ -122,6 +122,7 @@ bool is_receive_finished(int src, int dst, AstraSim::ncclFlowTag flowTag)
           std::make_pair(tag_id, std::make_pair(src, dst))))
   {
     NcclLog->writeLog(NcclLogLevel::DEBUG, " is_receive_finished waiting_to_notify_receiver  tag_id  %d src  %d dst  %d count  %d", tag_id, src, dst, waiting_to_notify_receiver[std::make_pair(tag_id, std::make_pair(src, dst))]);
+    // Qui forse ci va un lock
     if (--waiting_to_notify_receiver[std::make_pair(
             tag_id, std::make_pair(src, dst))] == 0)
     {

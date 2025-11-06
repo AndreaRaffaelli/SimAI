@@ -202,30 +202,6 @@ astra-sim/system/BasicEventHandlerData.cc.s:
 	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BasicEventHandlerData.cc.s
 .PHONY : astra-sim/system/BasicEventHandlerData.cc.s
 
-astra-sim/system/BootStrapnet.o: astra-sim/system/BootStrapnet.cc.o
-.PHONY : astra-sim/system/BootStrapnet.o
-
-# target to build an object file
-astra-sim/system/BootStrapnet.cc.o:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BootStrapnet.cc.o
-.PHONY : astra-sim/system/BootStrapnet.cc.o
-
-astra-sim/system/BootStrapnet.i: astra-sim/system/BootStrapnet.cc.i
-.PHONY : astra-sim/system/BootStrapnet.i
-
-# target to preprocess a source file
-astra-sim/system/BootStrapnet.cc.i:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BootStrapnet.cc.i
-.PHONY : astra-sim/system/BootStrapnet.cc.i
-
-astra-sim/system/BootStrapnet.s: astra-sim/system/BootStrapnet.cc.s
-.PHONY : astra-sim/system/BootStrapnet.s
-
-# target to generate assembly for a file
-astra-sim/system/BootStrapnet.cc.s:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/BootStrapnet.cc.s
-.PHONY : astra-sim/system/BootStrapnet.cc.s
-
 astra-sim/system/CollectivePhase.o: astra-sim/system/CollectivePhase.cc.o
 .PHONY : astra-sim/system/CollectivePhase.o
 
@@ -538,30 +514,6 @@ astra-sim/system/PacketBundle.cc.s:
 	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/PacketBundle.cc.s
 .PHONY : astra-sim/system/PacketBundle.cc.s
 
-astra-sim/system/PhyMultiThread.o: astra-sim/system/PhyMultiThread.cc.o
-.PHONY : astra-sim/system/PhyMultiThread.o
-
-# target to build an object file
-astra-sim/system/PhyMultiThread.cc.o:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/PhyMultiThread.cc.o
-.PHONY : astra-sim/system/PhyMultiThread.cc.o
-
-astra-sim/system/PhyMultiThread.i: astra-sim/system/PhyMultiThread.cc.i
-.PHONY : astra-sim/system/PhyMultiThread.i
-
-# target to preprocess a source file
-astra-sim/system/PhyMultiThread.cc.i:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/PhyMultiThread.cc.i
-.PHONY : astra-sim/system/PhyMultiThread.cc.i
-
-astra-sim/system/PhyMultiThread.s: astra-sim/system/PhyMultiThread.cc.s
-.PHONY : astra-sim/system/PhyMultiThread.s
-
-# target to generate assembly for a file
-astra-sim/system/PhyMultiThread.cc.s:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/PhyMultiThread.cc.s
-.PHONY : astra-sim/system/PhyMultiThread.cc.s
-
 astra-sim/system/QueueLevelHandler.o: astra-sim/system/QueueLevelHandler.cc.o
 .PHONY : astra-sim/system/QueueLevelHandler.o
 
@@ -729,30 +681,6 @@ astra-sim/system/SharedBusStat.s: astra-sim/system/SharedBusStat.cc.s
 astra-sim/system/SharedBusStat.cc.s:
 	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SharedBusStat.cc.s
 .PHONY : astra-sim/system/SharedBusStat.cc.s
-
-astra-sim/system/SimAiFlowModelRdma.o: astra-sim/system/SimAiFlowModelRdma.cc.o
-.PHONY : astra-sim/system/SimAiFlowModelRdma.o
-
-# target to build an object file
-astra-sim/system/SimAiFlowModelRdma.cc.o:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SimAiFlowModelRdma.cc.o
-.PHONY : astra-sim/system/SimAiFlowModelRdma.cc.o
-
-astra-sim/system/SimAiFlowModelRdma.i: astra-sim/system/SimAiFlowModelRdma.cc.i
-.PHONY : astra-sim/system/SimAiFlowModelRdma.i
-
-# target to preprocess a source file
-astra-sim/system/SimAiFlowModelRdma.cc.i:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SimAiFlowModelRdma.cc.i
-.PHONY : astra-sim/system/SimAiFlowModelRdma.cc.i
-
-astra-sim/system/SimAiFlowModelRdma.s: astra-sim/system/SimAiFlowModelRdma.cc.s
-.PHONY : astra-sim/system/SimAiFlowModelRdma.s
-
-# target to generate assembly for a file
-astra-sim/system/SimAiFlowModelRdma.cc.s:
-	cd /home/roc/SimAI/astra-sim-alibabacloud/build/simai_analytical && $(MAKE) $(MAKESILENT) -f AstraSim/CMakeFiles/AstraSim.dir/build.make AstraSim/CMakeFiles/AstraSim.dir/astra-sim/system/SimAiFlowModelRdma.cc.s
-.PHONY : astra-sim/system/SimAiFlowModelRdma.cc.s
 
 astra-sim/system/SimRecvCaller.o: astra-sim/system/SimRecvCaller.cc.o
 .PHONY : astra-sim/system/SimRecvCaller.o
@@ -1540,9 +1468,6 @@ help:
 	@echo "... astra-sim/system/BasicEventHandlerData.o"
 	@echo "... astra-sim/system/BasicEventHandlerData.i"
 	@echo "... astra-sim/system/BasicEventHandlerData.s"
-	@echo "... astra-sim/system/BootStrapnet.o"
-	@echo "... astra-sim/system/BootStrapnet.i"
-	@echo "... astra-sim/system/BootStrapnet.s"
 	@echo "... astra-sim/system/CollectivePhase.o"
 	@echo "... astra-sim/system/CollectivePhase.i"
 	@echo "... astra-sim/system/CollectivePhase.s"
@@ -1582,9 +1507,6 @@ help:
 	@echo "... astra-sim/system/PacketBundle.o"
 	@echo "... astra-sim/system/PacketBundle.i"
 	@echo "... astra-sim/system/PacketBundle.s"
-	@echo "... astra-sim/system/PhyMultiThread.o"
-	@echo "... astra-sim/system/PhyMultiThread.i"
-	@echo "... astra-sim/system/PhyMultiThread.s"
 	@echo "... astra-sim/system/QueueLevelHandler.o"
 	@echo "... astra-sim/system/QueueLevelHandler.i"
 	@echo "... astra-sim/system/QueueLevelHandler.s"
@@ -1606,9 +1528,6 @@ help:
 	@echo "... astra-sim/system/SharedBusStat.o"
 	@echo "... astra-sim/system/SharedBusStat.i"
 	@echo "... astra-sim/system/SharedBusStat.s"
-	@echo "... astra-sim/system/SimAiFlowModelRdma.o"
-	@echo "... astra-sim/system/SimAiFlowModelRdma.i"
-	@echo "... astra-sim/system/SimAiFlowModelRdma.s"
 	@echo "... astra-sim/system/SimRecvCaller.o"
 	@echo "... astra-sim/system/SimRecvCaller.i"
 	@echo "... astra-sim/system/SimRecvCaller.s"
