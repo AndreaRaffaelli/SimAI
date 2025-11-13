@@ -46,7 +46,11 @@ enum class ParallelismPolicy {
   All,
   None
 };
-
+enum class PPState {
+    Warmup,         // Filling pipeline with forward passes
+    Steady,         // 1F1B alternating pattern
+    Cooldown        // Draining pipeline with backward passes
+};
 class Workload : Callable {
  public:
   enum class LoopState {

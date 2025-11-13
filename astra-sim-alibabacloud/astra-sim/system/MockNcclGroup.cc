@@ -24,6 +24,57 @@
 using namespace std;
 namespace MockNccl
 {
+  LinearChannels gen_pp_linear_channels_internal(
+      int gp_idx,
+      const GroupInfo &gp_info)
+  {
+
+    LinearChannels channels;
+    MockNcclLog *NcclLog = MockNcclLog::getInstance();
+
+    NcclLog->writeLog(NcclLogLevel::DEBUG,
+                      "Generating PP linear channels for group %d with %d ranks",
+                      gp_idx, gp_info.nRanks);
+
+    // Create linear pipeline: stage 0 -> 1 -> 2 -> ... -> N-1
+    for (size_t i = 0; i < gp_info.Ranks.size(); ++i)
+    {
+      int current_rank = gp_info.Ranks[i];
+      int prev_rank = (i > 0) ? gp_info.Ranks[i - 1] : -1;
+      int next_rank = (i < gp_info.Ranks.size() - 1) ? gp_info.Ranks[i + 1] : -1;
+
+      channels[current_rank] = std::make_pair(prev_rank, next_rank);
+
+      NcclLog->writeLog(NcclLogLevel::DEBUG,
+                        "PP Stage %zu: rank %d, prev=%d, next=%d",
+                        i, current_rank, prev_rank, next_rank);
+    }
+    return channels;
+  }
+
+  LinearChannels MockNcclGroup::gen_pp_linear_channels(int rank, GroupType type)
+  {
+    MockNcclLog *NcclLog = MockNcclLog::getInstance();
+
+    if (GroupIndex.count(std::make_pair(rank, type)) == 0)
+    {
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "No PP group info for rank %d", rank);
+      return {};
+    }
+
+    int gp_idx = GroupIndex[std::make_pair(rank, type)];
+
+    if (AllPPchannels.count(gp_idx) == 0)
+    {
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "PP channels not initialized for group %d", gp_idx);
+      return {};
+    }
+
+    return AllPPchannels[gp_idx];
+  }
+
   MockNcclGroup::MockNcclGroup(int _ngpus, int _gpus_per_nodes, int _TP_size, int _DP_size, int _PP_size, int _EP_size, int _DP_EP_size, std::vector<int> _NVSwitch, GPUType _gpu_type) : g_flow_id(0), gpu_type(_gpu_type)
   {
     /*init groups
@@ -102,35 +153,33 @@ namespace MockNccl
         all_group_idx++;
       }
     }
-    // init PP group
+    // [ADD] After creating PP groups in constructor
     if (_PP_size > 1)
     {
-      std::set<int> PPnodes;
       for (int i = 0; i < PP_nums; i++)
       {
-        ranks.clear();
-        PPnodes.clear();
+        std::vector<int> ranks;
+        std::set<int> PPnodes;
         for (int j = 0; j < _PP_size; j++)
         {
-          int pp_rank = i + j * PP_nums; // Linear pipeline stages
+          int pp_rank = i + j * PP_nums;
           ranks.push_back(pp_rank);
           int node_idx = pp_rank / _gpus_per_nodes;
           PPnodes.insert(node_idx);
           GroupIndex[std::make_pair(pp_rank, PP)] = all_group_idx;
         }
-        // PP groups need NVSwitch tracking too
-        NVSwitchs.clear();
+        std::vector<int> NVSwitchs;
         for (int idx : PPnodes)
         {
           NVSwitchs.push_back(_NVSwitch[idx]);
           GroupIndex[std::make_pair(_NVSwitch[idx], PP)] = all_group_idx;
         }
         AllGroups[all_group_idx] = GroupInfo(all_group_idx, PP, PPnodes.size(), _PP_size, ranks, NVSwitchs);
+        // [CRITICAL] Generate and store PP linear channels
+        AllPPchannels[all_group_idx] = gen_pp_linear_channels_internal(all_group_idx, AllGroups[all_group_idx]);
         all_group_idx++;
       }
     }
-    // [ADD after AllGroups[all_group_idx] = ...; in PP group construction]
-    AllPPchannels[all_group_idx] = gen_pp_linear_channels(all_group_idx, PP);
 
     // init EP
     std::map<int, GroupInfo> AllTPGroups;
@@ -349,20 +398,31 @@ namespace MockNccl
     return ringchannels;
   }
 
-  std::shared_ptr<void> MockNcclGroup::getFlowModels(GroupType type, int rank, AstraSim::ComType op, uint64_t data_size, int layer_num, State loopstate)
+  std::shared_ptr<void> MockNcclGroup::getFlowModels(
+      GroupType type,
+      int rank,
+      AstraSim::ComType op,
+      uint64_t data_size,
+      int layer_num,
+      State loopstate)
   {
     std::string flow_model_name;
     GroupInfo gp_info;
     int gp_idx;
     int end_rank;
     MockNcclLog *NcclLog = MockNcclLog::getInstance();
+
     if (GroupIndex.count(std::make_pair(rank, type)) == 0)
     {
-      NcclLog->writeLog(NcclLogLevel::ERROR, "There is no corresponding group info and group ring channel, resulting in an error in generating the flow model.");
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "There is no corresponding group info and group ring channel, "
+                        "resulting in an error in generating the flow model.");
       return nullptr;
     }
+
     gp_idx = GroupIndex[std::make_pair(rank, type)];
     gp_info = AllGroups[gp_idx];
+
     switch (type)
     {
     case TP:
@@ -377,47 +437,268 @@ namespace MockNccl
     case DP_EP:
       flow_model_name = "DP_EP";
       break;
+    case PP: // [PP parallelism]
+      flow_model_name = "PP";
+      break;
     default:
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "Unknown GroupType %d for rank %d",
+                        static_cast<int>(type), rank);
+      flow_model_name = "UNKNOWN";
       break;
     }
-    flow_model_name = flow_model_name + "_" + std::to_string(gp_idx) + "_" + std::to_string(layer_num) + "_" + std::to_string(static_cast<int>(loopstate)) + "_" + std::to_string(static_cast<int>(op)) + "_" + std::to_string(data_size);
+
+    // [IMPORTANT] For PP, include peer rank in cache key for uniqueness
+    // Since PP is point-to-point, same layer/state may have different peers
+    std::string peer_suffix = "";
+    if (type == PP)
+    {
+      LinearChannels pp_ch = gen_pp_linear_channels(rank, type);
+      int peer_rank = -1;
+
+      if (op == AstraSim::ComType::PP_Send)
+      {
+        peer_rank = pp_ch[rank].second; // Next stage
+      }
+      else if (op == AstraSim::ComType::PP_Recv)
+      {
+        peer_rank = pp_ch[rank].first; // Previous stage
+      }
+
+      if (peer_rank != -1)
+      {
+        peer_suffix = "_peer" + std::to_string(peer_rank);
+      }
+    }
+
+    flow_model_name = flow_model_name + "_" +
+                      std::to_string(gp_idx) + "_" +
+                      std::to_string(layer_num) + "_" +
+                      std::to_string(static_cast<int>(loopstate)) + "_" +
+                      std::to_string(static_cast<int>(op)) + "_" +
+                      std::to_string(data_size) +
+                      peer_suffix; // [ADD] Peer suffix for PP uniqueness
+
+    // Check cache
     if (flow_models.count(flow_model_name))
     {
       FlowName2nums[flow_model_name]++;
       std::shared_ptr<void> presult;
+
       if (flow_models[flow_model_name].count(rank) != 0)
         presult = flow_models[flow_model_name][rank];
       else
       {
         presult = nullptr;
       }
+
+      NcclLog->writeLog(NcclLogLevel::DEBUG,
+                        "Cache hit for flow model: %s (count: %d)",
+                        flow_model_name.c_str(),
+                        FlowName2nums[flow_model_name]);
+
       return presult;
     }
     else
     {
+      // Generate new flow models
+      NcclLog->writeLog(NcclLogLevel::DEBUG,
+                        "Generating new flow model: %s",
+                        flow_model_name.c_str());
+
       flow_models[flow_model_name] = genFlowModels(type, rank, op, data_size);
       FlowName2nums[flow_model_name] = 1;
-      return flow_models[flow_model_name][rank];
+
+      if (flow_models[flow_model_name].count(rank) != 0)
+      {
+        return flow_models[flow_model_name][rank];
+      }
+      else
+      {
+        NcclLog->writeLog(NcclLogLevel::WARNING,
+                          "Flow model generated but rank %d not found in result", rank);
+        return nullptr;
+      }
     }
   }
 
-  std::map<int, std::shared_ptr<FlowModels>> MockNcclGroup::genFlowModels(GroupType type, int rank, AstraSim::ComType op, uint64_t data_size)
+  std::map<int, std::shared_ptr<MockNccl::FlowModels>> MockNcclGroup::genSendFlowModels(
+      GroupType type,
+      int rank,
+      int peer_rank,
+      uint64_t data_size)
   {
-    switch (op)
+
+    FlowModels result = {};
+    std::map<int, FlowModels> rank2flowmodels;
+    std::map<int, std::shared_ptr<FlowModels>> rank2pflowmodels;
+    MockNcclLog *NcclLog = MockNcclLog::getInstance();
+
+    if (GroupIndex.count(std::make_pair(rank, type)) == 0)
     {
-    case AstraSim::ComType::All_Reduce:
-      return genAllReduceFlowModels(type, rank, data_size);
-    case AstraSim::ComType::All_Gather:
-      return genAllGatherFlowModels(type, rank, data_size);
-    case AstraSim::ComType::Reduce_Scatter:
-      return genReduceScatterFlowModels(type, rank, data_size);
-    case AstraSim::ComType::All_to_All:
-      return genAlltoAllFlowModels(type, rank, data_size);
-    default:
-      break;
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "No group info for PP send from rank %d", rank);
+      return {};
+    }
+
+    int gp_idx = GroupIndex[std::make_pair(rank, type)];
+    GroupInfo gp_info = AllGroups[gp_idx];
+    LinearChannels pp_channels = AllPPchannels[gp_idx];
+
+    // Verify peer_rank is valid next stage
+    if (pp_channels[rank].second != peer_rank)
+    {
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "Invalid PP send: rank %d -> %d (expected %d)",
+                        rank, peer_rank, pp_channels[rank].second);
+      return {};
+    }
+
+    // Create single flow from rank to peer_rank
+    // [CRITICAL] Use member variable g_flow_id and auto-increment
+    SingleFlow send_flow(
+        g_flow_id,  // Flow ID - auto-allocated
+        rank,       // Source rank (this stage)
+        peer_rank,  // Destination rank (next stage)
+        data_size,  // Activation/gradient tensor size
+        {},         // No parent ranks (independent send)
+        {},         // No parent flow IDs
+        {},         // No child flow IDs
+        0,          // Channel 0 (PP uses single channel)
+        0,          // Chunk ID (could be microbatch_id if passed)
+        1,          // Chunk count (single message)
+        "PP_SEND"); // Connection tag
+
+    result[std::make_pair(0, g_flow_id)] = send_flow;
+    g_flow_id++; // [CRITICAL] Increment for next flow
+
+    NcclLog->writeLog(NcclLogLevel::DEBUG,
+                      "Created PP send flow %d: rank %d -> %d, size %llu",
+                      send_flow.flow_id, rank, peer_rank, data_size);
+
+    // Populate both src and dst rank maps
+    rank2flowmodels[rank][std::make_pair(0, send_flow.flow_id)] = send_flow;
+    rank2flowmodels[peer_rank][std::make_pair(0, send_flow.flow_id)] = send_flow;
+
+    for (auto it = rank2flowmodels.begin(); it != rank2flowmodels.end(); it++)
+    {
+      rank2pflowmodels[it->first] = std::make_shared<FlowModels>(it->second);
+    }
+
+    return rank2pflowmodels;
+  }
+
+  std::map<int, std::shared_ptr<FlowModels>> MockNcclGroup::genRecvFlowModels(
+      GroupType type,
+      int rank,
+      int peer_rank,
+      uint64_t data_size)
+  {
+
+    FlowModels result = {};
+    std::map<int, FlowModels> rank2flowmodels;
+    std::map<int, std::shared_ptr<FlowModels>> rank2pflowmodels;
+    MockNcclLog *NcclLog = MockNcclLog::getInstance();
+
+    if (GroupIndex.count(std::make_pair(rank, type)) == 0)
+    {
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "No group info for PP recv at rank %d", rank);
+      return {};
+    }
+
+    int gp_idx = GroupIndex[std::make_pair(rank, type)];
+    GroupInfo gp_info = AllGroups[gp_idx];
+    LinearChannels pp_channels = AllPPchannels[gp_idx];
+
+    // Verify peer_rank is valid previous stage
+    if (pp_channels[rank].first != peer_rank)
+    {
+      NcclLog->writeLog(NcclLogLevel::ERROR,
+                        "Invalid PP recv: rank %d <- %d (expected %d)",
+                        rank, peer_rank, pp_channels[rank].first);
+      return {};
+    }
+
+    // Create single flow from peer_rank to rank
+    // [CRITICAL] Use member variable g_flow_id and auto-increment
+    SingleFlow recv_flow(
+        g_flow_id,  // Flow ID - auto-allocated
+        peer_rank,  // Source rank (previous stage)
+        rank,       // Destination rank (this stage)
+        data_size,  // Activation/gradient tensor size
+        {},         // No parent ranks
+        {},         // No parent flow IDs
+        {},         // No child flow IDs
+        0,          // Channel 0 (PP uses single channel)
+        0,          // Chunk ID
+        1,          // Chunk count
+        "PP_RECV"); // Connection tag
+
+    result[std::make_pair(0, g_flow_id)] = recv_flow;
+    g_flow_id++; // [CRITICAL] Increment for next flow
+
+    NcclLog->writeLog(NcclLogLevel::DEBUG,
+                      "Created PP recv flow %d: rank %d <- %d, size %llu",
+                      recv_flow.flow_id, rank, peer_rank, data_size);
+
+    // Populate both src and dst rank maps
+    rank2flowmodels[peer_rank][std::make_pair(0, recv_flow.flow_id)] = recv_flow;
+    rank2flowmodels[rank][std::make_pair(0, recv_flow.flow_id)] = recv_flow;
+
+    for (auto it = rank2flowmodels.begin(); it != rank2flowmodels.end(); it++)
+    {
+      rank2pflowmodels[it->first] = std::make_shared<FlowModels>(it->second);
+    }
+
+    return rank2pflowmodels;
+  }
+  
+  std::map<int, std::shared_ptr<FlowModels>> MockNcclGroup::genFlowModels(
+    GroupType type, 
+    int rank, 
+    AstraSim::ComType op, 
+    uint64_t data_size) {
+    
+    switch (op) {
+        case AstraSim::ComType::All_Reduce:
+            return genAllReduceFlowModels(type, rank, data_size);
+        case AstraSim::ComType::All_Gather:
+            return genAllGatherFlowModels(type, rank, data_size);
+        case AstraSim::ComType::Reduce_Scatter:
+            return genReduceScatterFlowModels(type, rank, data_size);
+        case AstraSim::ComType::All_to_All:
+            return genAlltoAllFlowModels(type, rank, data_size);
+        // [ADD] Pipeline parallelism P2P operations
+        case AstraSim::ComType::PP_Send: {
+            // Determine peer_rank from PP linear channels
+            if (type == PP) {
+                LinearChannels pp_ch = gen_pp_linear_channels(rank, type);
+                int peer_rank = pp_ch[rank].second;  // Next stage
+                if (peer_rank == -1) {
+                    return {};  // Last stage has no send
+                }
+                return genSendFlowModels(type, rank, peer_rank, data_size);
+            }
+            return {};
+        }
+        case AstraSim::ComType::PP_Recv: {
+            // Determine peer_rank from PP linear channels
+            if (type == PP) {
+                LinearChannels pp_ch = gen_pp_linear_channels(rank, type);
+                int peer_rank = pp_ch[rank].first;  // Previous stage
+                if (peer_rank == -1) {
+                    return {};  // First stage has no recv
+                }
+                return genRecvFlowModels(type, rank, peer_rank, data_size);
+            }
+            return {};
+        }
+        default:
+            break;
     }
     return {};
-  }
+}
 
   std::map<int, std::shared_ptr<FlowModels>> MockNcclGroup::genAlltoAllFlowModels(GroupType type, int rank, uint64_t data_size)
   {
@@ -2346,20 +2627,6 @@ namespace MockNccl
       }
     }
     return node2treenode[nodes[(rank2index[root->node] + 1) % nodes.size()]];
-  }
-
-  // [ADD to MockNcclGroup.cc]
-  LinearChannels MockNcclGroup::gen_pp_linear_channels(int group_idx, GroupType type)
-  {
-    LinearChannels channels;
-    const auto &group = AllGroups[group_idx];
-    for (size_t i = 0; i < group.Ranks.size(); ++i)
-    {
-      int prev = (i > 0) ? group.Ranks[i - 1] : -1;
-      int next = (i < group.Ranks.size() - 1) ? group.Ranks[i + 1] : -1;
-      channels[group.Ranks[i]] = std::make_pair(prev, next);
-    }
-    return channels;
   }
 
   ncclInfo *MockNcclGroup::get_algo_proto_info(

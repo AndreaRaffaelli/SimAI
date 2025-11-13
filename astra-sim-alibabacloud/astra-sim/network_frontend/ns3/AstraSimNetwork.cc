@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
   }
   int nodes_num = node_num - switch_num;
   int gpu_num = node_num - nvswitch_num - switch_num;
-
+  int num_servers = gpu_num / gpus_per_server;
   std::map<int, int> node2nvswitch;
   for (int i = 0; i < gpu_num; ++i)
   {
@@ -335,8 +335,16 @@ int main(int argc, char *argv[])
   std::vector<ASTRASimNetwork *> networks(nodes_num, nullptr);
   std::vector<AstraSim::Sys *> systems(nodes_num, nullptr);
 
-  for (int j = 0; j < nodes_num; j++)
+  for (int j = 0; j < gpu_num; j++)
   {
+
+    Ptr<Node> gpu_node = n.Get(j);
+    int num_devices = gpu_node->GetNDevices() - 1;  // Exclude loopback
+    
+    // Estimate parallelism from device count
+    int queues_local = std::min(num_devices, 8);   // NVLink supports ~8 concurrent
+    int queues_remote = std::max(1, (int)(num_devices / gpus_per_server));
+
     networks[j] =
         new ASTRASimNetwork(j, 0);
     systems[j] = new AstraSim::Sys(
@@ -345,8 +353,8 @@ int main(int argc, char *argv[])
         j,
         0,
         1,
-        {nodes_num},
-        {1},
+        {static_cast<int>(gpus_per_server), static_cast<int>(num_servers)},
+        {queues_local, queues_remote},
         "",
         user_param.workload,
         1,
@@ -365,7 +373,7 @@ int main(int argc, char *argv[])
     systems[j]->nvswitch_id = node2nvswitch[j];
     systems[j]->num_gpus = nodes_num - nvswitch_num;
   }
-  for (int i = 0; i < nodes_num; i++)
+  for (int i = 0; i < gpu_num; i++)
   {
     systems[i]->workload->fire();
   }

@@ -1326,8 +1326,8 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
   }
 
   FILE *trace_output = fopen(trace_output_file.c_str(), "w");
-  if (enable_trace > 0)
-    qbb.EnableTracing(trace_output, trace_nodes);
+  // if (enable_trace > 0)
+  //   qbb.EnableTracing(trace_output, trace_nodes);
   if (enable_pcap_trace)
   {
     NS_LOG_INFO("Enabling PCAP tracing...");
@@ -1339,7 +1339,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
     // Enable PCAP tracing for all devices
-    qbb.EnablePcapAll(pcap_output_dir+"/"+current_date, true);
+    // qbb.EnablePcapAll(pcap_output_dir+"/"+current_date, true);
     // Specific devcies can be enabled as needed:
     // for (uint32_t i = 0; i < node_num; i++) {
     //     if (n.Get(i)->GetNodeType() == NodeType::SWITCH) {  // Solo host

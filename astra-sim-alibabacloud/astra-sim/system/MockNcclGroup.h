@@ -41,7 +41,7 @@ namespace MockNccl
   typedef std::map<int, std::map<int, std::vector<ncclChannelNode *>>> NVLStreechannels;
   typedef std::map<int, std::map<int, ncclTree>> TreeChannels;
   typedef std::map<int, std::pair<int, int>> LinearChannels; // [For PP group]
-  
+
   enum GroupType
   {
     TP,
@@ -156,10 +156,11 @@ namespace MockNccl
     std::map<int, std::shared_ptr<FlowModels>> genAlltoAllFlowModels(GroupType type, int rank, uint64_t data_size);
     std::map<int, std::shared_ptr<FlowModels>> genAllReduceFlowModels(GroupType type, int rank, uint64_t data_size);
     std::map<int, std::shared_ptr<FlowModels>> genAllReduceRingFlowModels(GroupType type, int rank, uint64_t data_size);
-    std::map<int, std::shared_ptr<FlowModels>> genAllreduceNVLSFlowModels(
-        GroupType type,
-        int rank,
-        uint64_t data_size);
+    std::map<int, std::shared_ptr<FlowModels>> genAllreduceNVLSFlowModels(GroupType type, int rank, uint64_t data_size);
+    // [PP Parallelism]
+    std::map<int, std::shared_ptr<FlowModels>> genSendFlowModels(GroupType type, int rank, int peer_rank, uint64_t data_size);
+    std::map<int, std::shared_ptr<FlowModels>> genRecvFlowModels(GroupType type, int rank, int peer_rank, uint64_t data_size);
+    //
     std::shared_ptr<FlowModels> genallReduceNVLSTreeFlowModels(GroupType type, int rank, uint64_t data_size);
     FlowModels generate_flow_model_nvls_tree_allreduce_up(std::vector<ncclChannelNode *> nvlstreenodes, std::unordered_map<ncclChannelNode *, int> upinDegree, std::unordered_map<ncclChannelNode *, std::vector<int>> &nodeprevs, int chunk_size, int chunk_id, int chunk_count, int channle_id, FlowModels &result);
     FlowModels generate_flow_model_nvls_tree_allreduce_down(std::vector<ncclChannelNode *> nvlstreenodes, std::unordered_map<ncclChannelNode *, int> downinDegree, std::unordered_map<ncclChannelNode *, std::vector<int>> &nodeprevs, int chunk_size, int chunk_id, int chunk_count, int channle_id, FlowModels &result);
