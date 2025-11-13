@@ -1338,18 +1338,12 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>), void (*send_fin
     char date_buf[9];
     std::snprintf(date_buf, sizeof(date_buf), "%04d%02d%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     std::string current_date = date_buf;
-    // Enable PCAP tracing for all devices
-    // qbb.EnablePcapAll(pcap_output_dir+"/"+current_date, true);
-    // Specific devcies can be enabled as needed:
-    // for (uint32_t i = 0; i < node_num; i++) {
-    //     if (n.Get(i)->GetNodeType() == NodeType::SWITCH) {  // Solo host
-    //         for (uint32_t j = 1; j < n.Get(i)->GetNDevices(); j++) {
-    //             qbb.EnablePcap(pcap_output_dir + "/SWITCH-" + std::to_string(i),
-    //                           n.Get(i)->GetDevice(j));
-    //         }
-    //     }
-    // }
+    std::string pcap_file = pcap_output_dir + "/capture_" + current_date + ".pcap";
+    pcap_sniffer::SetDebugMode(false, pcap_output_dir + "/" + current_date + "pcap_sniffer.debug"); // Optional: for debugging
+    pcap_sniffer::AttachPcapSnifferToAllDevices(n, pcap_file);
   }
+
+  
 
   {
     SimSetting sim_setting;
